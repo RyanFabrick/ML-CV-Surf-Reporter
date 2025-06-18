@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title> CDIP Surf Forecast </title>
+</head>
+<body>
+    <h1>Wave Height Signficance</h1>
+    <ul id = "data"></ul>
+
+<script>
+
+// fetches surf data from backend API
+fetch('/api/surfdata')
+
+    .then(function(response) {
+        // converts response to JSON
+        return response.json();
+    })
+    
+    .then(function(data) {
+        // gets <ul> with id = "data"
+        const list = document.getElementById('data');
+
+        // loops wave data appends to list
+        for (let i = 0; i < data.time.length; i++) {
+
+            const time = data.time[i]
+            const height = data.waveHs[i]
+            
+            // creates new <li> element
+            const li = document.createElement('li')
+            li.textContent = `Time: ${time} Wave Height : ${height} meters`;
+
+            // appends to list
+            list.appendChild(li);
+        }
+    })
+
+    .catch(function(error) {
+
+        console.error('Error Fetching Data:', error);
+    })
+
+</script>
+
+</body>
+</html>
