@@ -1,4 +1,5 @@
 import xarray as xr
+import urllib.request
 
 from flask import Flask
 from flask import jsonify
@@ -6,6 +7,7 @@ from flask import request
 from flask import send_file
 from flask import render_template
 from datetime import datetime, timezone
+
 
 app = Flask(__name__)
 
@@ -19,15 +21,30 @@ def serve_frontend():
 def get_surf_data():
     try:    
         # Step 1: ppoint to public netCDF file for data 
-        # (Dana Point Buoy - station 093)
-        url= 'https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/realtime/rt_093.nc'
-        
+        # (Point Dume Bouy - 273)
+        url= 'https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/realtime/273p1_rt.nc'
+
+        # checks connectivity to CDIP server
+        #try:
+        #    urllib.request.urlopen(url, timeout=30)
+        #except Exception as e:
+        #    return jsonify({'error': 'CDIP Server Unreachable', 'Details': str(e)}), 504
+
         # loads .nc file directly
-        ds = xr.open_dataset('273p1_rt.nc')
+        #ds = xr.open_dataset('273p1_rt.nc')
+
+        # opens dataset remotely
+        ds = xr.open_dataset(url)
+
+        ds = ds.isel(waveTime=slice(-30, None))
 
         # Step 2: filter for "good" records
         # CDIP documentation reccomenndation
+        # keeps only "good" records
         good = ds['waveFlagPrimary'] == 1
+        ds = ds.where(good, drop=True)
+        if ds.waveTime.size == 0:
+            return jsonify({'error': 'No Valid Wave Data Found'}), 404
 
         # Step 3: Extract relevant data
         # Relevant data: time, 
@@ -37,32 +54,31 @@ def get_surf_data():
         # avg wave period (waveTa),
         # mean zero-upcrossing period (waveTz),
         # peak wave power spectral density (wavePeakPSD)
-        times = ds['waveTime'].values[good]
-        wave_height_signficant = ds['waveHs'].values[good]
-        wave_tp = ds['waveTp'].values[good]
-        wave_dp = ds['waveDp'].values[good]
-        wave_ta = ds['waveTa'].values[good]
-        wave_tz = ds['waveTz'].values[good]
-        wave_psd = ds['wavePeakPSD'].values[good]
+        times = ds['waveTime'].values[:10]
+        wave_height_significant = ds['waveHs'].values[:10]
+        wave_tp = ds['waveTp'].values[:10]
+        wave_dp = ds['waveDp'].values[:10]
+        wave_ta = ds['waveTa'].values[:10]
+        wave_tz = ds['waveTz'].values[:10]
+        wave_psd = ds['wavePeakPSD'].values[:10]
 
         # Step 4: convert UNIX to readable format
 
         # slices first 10 elements of 'times',
-        # loops for first 10 elements, 
         # converts (t) to string,
         # stores in readable_time
-        readable_time = [str(t) for t in times[:10]]
+        readable_time = [str(t) for t in times]
 
         # Step 5: returns data to frontend as JSON
         return jsonify({
 
             'time': readable_time,
-            "waveHs": wave_height_signficant[:10].tolist(),
-            "waveTp": wave_tp[:10].tolist(),
-            "waveDp": wave_dp[:10].tolist(),
-            "waveTa": wave_ta[:10].tolist(),
-            "waveTz": wave_tz[:10].tolist(),
-            "wavePeakPSD": wave_psd[:10].tolist()
+            "waveHs": wave_height_significant.tolist(),
+            "waveTp": wave_tp.tolist(),
+            "waveDp": wave_dp.tolist(),
+            "waveTa": wave_ta.tolist(),
+            "waveTz": wave_tz.tolist(),
+            "wavePeakPSD": wave_psd.tolist()
 
         })
         

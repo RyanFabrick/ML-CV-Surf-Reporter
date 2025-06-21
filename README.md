@@ -4,5 +4,5 @@
     - Parses, filters using "xarray"
     - Displays signficant wave heights and respective timestamps on basic frontend via local Flask
     
-- Basic PoC --> plan to use a python library in the future if possible, feasible
+- Basic PoC --> plan to use a python library in the future if possible, feasible (when available - CDIPpy)
     - relies on and uses "xarray", "flask", and "datetime"
