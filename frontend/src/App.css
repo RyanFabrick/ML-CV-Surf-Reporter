@@ -1,0 +1,38 @@
+body {
+  font-family: 'Times New Roman', sans-serif;
+  background-color: #156292;
+  color: #000000;
+  padding: 2rem;
+  margin: 0;
+}
+
+.dashboard {
+  max-width: 600px;
+  margin: auto;
+}
+
+.metric {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #000000;
+  text-align: center;
+}
+
+.title-box {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1em;
+  margin-bottom: 1rem;
+}
+
+.metrics-box {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+}

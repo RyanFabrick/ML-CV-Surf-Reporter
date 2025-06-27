@@ -6,10 +6,13 @@ from flask import jsonify
 from flask import request
 from flask import send_file
 from flask import render_template
+#CORS allows cross-origin requests
+#useful for frontend-backend communication
+from flask_cors import CORS
 from datetime import datetime, timezone
 
-
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def serve_frontend():
