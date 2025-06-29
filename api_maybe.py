@@ -1,5 +1,6 @@
 import xarray as xr
 import urllib.request
+import pandas as pd
 
 from flask import Flask
 from flask import jsonify
@@ -66,11 +67,15 @@ def get_surf_data():
         wave_psd = ds['wavePeakPSD'].values[:10]
 
         # Step 4: convert UNIX to readable format
-
-        # slices first 10 elements of 'times',
-        # converts (t) to string,
-        # stores in readable_time
-        readable_time = [str(t) for t in times]
+        #converts numpy.datetime64 to Python datetime/format, each
+        readable_time = []
+        for t in times:
+            #converts to pandas.Timestamp
+            timestamp = pd.to_datetime(t)
+            #formats as 'YYY-MM-DD HH:MM'
+            formatted = timestamp.strftime('%Y-%m-%d %H:%M')
+            #appends to list
+            readable_time.append(formatted)
 
         # Step 5: returns data to frontend as JSON
         return jsonify({
