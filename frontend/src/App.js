@@ -1,16 +1,33 @@
 //useState -> store and track data
 //useEffect -> runs logic after component loads
 import React, { useEffect, useState } from 'react';
-import './App.css';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts';
-
+import './App.css';
 
 //uses react state to track data and error
-//data -> data from Flask backend
-//error -> possible error during fetch
 function App() {
+  //data -> data from Flask backend
   const [data, setData] = useState(null);
+  //error -> possible error during fetch
   const [error, setError] = useState(null);
+  //add state for selected buoy
+  const [selectedBuoy, setSelectedBuoy] = useState('273');
+  
+  //currently mock buoy data - (tentative update)
+  const buoyOptions = [
+    { id: '273', name: 'Point Dume, CA', location: 'Malibu' },
+    { id: '191', name: 'Santa Monica Bay, CA', location: 'Santa Monica' },
+    { id: '215', name: 'Harvest, CA', location: 'Point Arguello' },
+    { id: '067', name: 'San Francisco Bar, CA', location: 'San Francisco' }
+  ];
+
+  //function handles buoy selection changes
+  const handleBuoyChange = (event) => {
+    const newBuoyId = event.target.value;
+    setSelectedBuoy(newBuoyId);
+
+    console.log('Selected Buoy: ${newBuoyId}')
+  };
 
   //runs after empty array is ran, after component mounts
   //fetches data from Flask endpoint
@@ -66,6 +83,32 @@ function extractTimeFromString(timeString) {
     <div className="dashboard">
       <div className="title-box">
         <div className="title">Surf Forecast Data</div>
+      </div>
+
+      <div className="buoy-selector-box">
+        <label htmlFor="buoy-select" className="Buoy-label">
+          Select Buoy Location:
+          </label>
+          <select
+            id="buoy-select"
+            /*dropdown controlled by react*/
+            value={selectedBuoy}
+            /*function runs on user select*/
+            onChange={handleBuoyChange}
+            className="buoy-dropdown"
+            >
+              {/*creates <option> element for each buoy in array*/}
+              {buoyOptions.map((buoy) => (
+                /*unique keys for list items*/
+                <option key={buoy.id} value={buoy.id}>
+                  {buoy.name} - {buoy.location}
+                </option>
+              ))}
+            </select>
+            <div className="selected-info">
+              {/*gives optional chanining, access name even if buoy not found*/}
+              Currently Showing: {buoyOptions.find(b => b.id === selectedBuoy)?.name}
+            </div>
       </div>
 
       {data && (

@@ -45,11 +45,52 @@ body {
 .chart-container {
   background-color: #ffffff; 
   border-radius: 12px;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
 }
 
 .wave-chart-title {
   text-align: center;
   margin-bottom: 1rem;
   color: #000000;
+}
+
+.buoy-selector-box {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.buoy-selector-box {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.buoy-dropdown {
+  padding: 0.5rem 1rem;
+  border: 2px solid #156292;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 1rem;
+  color: #000000;
+  min-width: 300px;
+  cursor: pointer;
+}
+
+.buoy-dropdown:focus {
+  outline: none;
+  border-color: #1e7bb8;
+  box-shadow: 0 0 0 3px rgba(21, 98, 146, 0.2);
+}
+
+.selected-info {
+  margin-top: 0.75rem;
+  font-style: italic;
+  color: #156292;
+  font-size: 0.9rem;
 }
