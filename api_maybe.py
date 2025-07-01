@@ -20,13 +20,41 @@ def serve_frontend():
 
     return render_template('frontend.html')
 
-#main shit
+@app.route('/api/video-analysis')
+def get_video_analysis():
+    #gets webcam_id from query parameters
+    webcam_id = request.args.get('webcam_id')
+
+    try:
+        #checks if webcam_id is provided and valid
+        if not webcam_id:
+            return jsonify({'error': 'No Webcam Selected'}), 400
+        if webcam_id not in ['malibu']: #will upgrade later
+            return jsonify({'error': 'Webcam Not Available'}), 404
+        #mock data for video analysis, soon to upgrade
+        if webcam_id == 'malibu':
+            mock_video_data = {
+                'webcam_id': webcam_id,
+                'location_name': 'Malibu',
+                'surfer_Count': 3,
+                'status': 'Online'
+            }
+        return jsonify(mock_video_data)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+#Exisitng surfdata route accepts bupy_id parameter
 @app.route('/api/surfdata')
 def get_surf_data():
+    
+    #gets buoy_id from query parameters, default - 237(point dume)
+    buoy_id = request.args.get('buoy_id', '273')
+    
     try:    
         # Step 1: ppoint to public netCDF file for data 
         # (Point Dume Bouy - 273)
-        url= 'https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/realtime/273p1_rt.nc'
+        url = f'https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/realtime/{buoy_id}p1_rt.nc'
 
         # checks connectivity to CDIP server
         #try:

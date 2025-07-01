@@ -1,7 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 
 body {
   font-family: 'Times New Roman', sans-serif;
@@ -63,15 +59,7 @@ body {
   text-align: center;
 }
 
-.buoy-selector-box {
-  background-color: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.buoy-dropdown {
+.location-dropdown {
   padding: 0.5rem 1rem;
   border: 2px solid #156292;
   border-radius: 8px;
@@ -93,4 +81,132 @@ body {
   font-style: italic;
   color: #156292;
   font-size: 0.9rem;
+}
+
+.selection-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.selector-box {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.selector-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #156292;
+}
+
+.location-dropdown {
+  padding: 0.5rem 1rem;
+  border: 2px solid #156292;
+  border-radius: 8px;
+  background-color: white;
+  font-size: 1rem;
+  color: #000000;
+  min-width: 280px;
+  cursor: pointer;
+}
+
+.location-dropdown:focus {
+  outline: none;
+  border-color: #1e7bb8;
+  box-shadow: 0 0 0 3px rgba(21, 98, 146, 0.2);
+}
+
+.selected-info {
+  margin-top: 0.75rem;
+  font-style: italic;
+  color: #156292;
+  font-size: 0.9rem;
+}
+
+.video-analysis-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #28a745; /* Green border to indicate "live" data */
+}
+
+.analysis-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #156292;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.analysis-card {
+  background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+  border: 2px solid #156292;
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.analysis-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(21, 98, 146, 0.2);
+}
+
+.card-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #156292;
+  margin-bottom: 0.25rem;
+}
+
+.card-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+/* Webcam Error Styles */
+.webcam-error {
+  text-align: center;
+  padding: 2rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  color: #856404;
+}
+
+.webcam-error h3 {
+  margin-bottom: 0.5rem;
+  color: #856404;
+}
+
+@media (max-width: 768px) {
+  .selection-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .analysis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .analysis-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .location-dropdown {
+    min-width: 250px;
+  }
 }

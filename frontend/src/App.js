@@ -12,6 +12,10 @@ function App() {
   const [error, setError] = useState(null);
   //add state for selected buoy
   const [selectedBuoy, setSelectedBuoy] = useState('273');
+  //webcam specific state
+  const [selectedWebcam, setSelectedWebcam]= useState('');
+  const [videoData, setVideoData] = useState(null);
+  const [webcamError, setWebcamError] = useState(null);
   
   //currently mock buoy data - (tentative update)
   const buoyOptions = [
@@ -21,32 +25,93 @@ function App() {
     { id: '067', name: 'San Francisco Bar, CA', location: 'San Francisco' }
   ];
 
+  //webcam options (tentative update, currently malibu only)
+  const webcamOptions = [{
+      id: 'malibu', 
+      name: 'Malibu - Point Dume', 
+      location: 'Malibu, CA',
+      status: 'online',
+      buoy_nearby: '273'
+  }];
+
   //function handles buoy selection changes
   const handleBuoyChange = (event) => {
     const newBuoyId = event.target.value;
     setSelectedBuoy(newBuoyId);
-
-    console.log('Selected Buoy: ${newBuoyId}')
+    console.log(`Selected Buoy: ${newBuoyId}`);
   };
+
+  // handles ebcam selection changes
+  const handleWebcamChange = (event) => {
+    const newWebcamId = event.target.value;
+    setSelectedWebcam(newWebcamId);
+    //data refreshues due to useEffect depednecny
+    console.log(`Selected Webcam: ${newWebcamId || 'None'}`);
+  }
 
   //runs after empty array is ran, after component mounts
   //fetches data from Flask endpoint
   //dtores in data, if error stores error message
-  useEffect(() => {
-    fetch('http://localhost:5000/api/surfdata')
+  const fetchWaveData = (buoyId) => {
+    fetch(`http://localhost:5000/api/surfdata?buoy_id=${buoyId}`)
       .then((res) => res.json())
       .then((json) => {
         if (json.error) {
-          setError(json.error);
+          setError(`Buoy Data Error: ${json.error}`);
+          setData(null);
         } else {
           setData(json);
+          setError(null);
         }
       })
       .catch((err) => {
-        console.error('Fetch error:', err);
-        setError('Failed to fetch data');
+        console.error('Wave Data Fetch Error:', err);
+        setError('Failed to fetch wave data - check connection');
+        setData(null);
       });
-  }, []);
+  };
+
+  const fetchVideoData = (webcamId) => {
+    if (!webcamId) {
+      //no webcam selected , clear vid data
+      setVideoData(null);
+      setWebcamError(null);
+      return;
+    }
+    
+    fetch(`http://localhost:5000/api/video-analysis?webcam_id=${webcamId}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.error) {
+          setWebcamError(`Webcam Error: ${json.error}`);
+          setVideoData(null);
+        } else {
+          setVideoData(json);
+          setWebcamError(null);
+        }
+      })
+      .catch((err) => {
+        console.error('Webcam Data Fetch Error:', err);
+        setWebcamError('Failed to fetch webcam data');
+        setVideoData(null);
+      });
+  };
+
+  useEffect(() => {
+    //intial data fetch
+    fetchWaveData(selectedBuoy);
+    fetchVideoData(selectedWebcam);
+
+    const interval = setInterval(() => {
+      fetchWaveData(selectedBuoy);
+      if (selectedWebcam) {
+        fetchVideoData(selectedWebcam);
+      }
+    } , 180000); //3 minutes
+    
+    return () => clearInterval(interval);
+
+  }, [selectedBuoy, selectedWebcam]); //rerun when selection changes
 
   //Prepares data for Recharts
   //transforms raw API data into readable Recharts data
@@ -85,9 +150,10 @@ function extractTimeFromString(timeString) {
         <div className="title">Surf Forecast Data</div>
       </div>
 
-      <div className="buoy-selector-box">
-        <label htmlFor="buoy-select" className="Buoy-label">
-          Select Buoy Location:
+      <div className="selection-container">
+        <div className="selector-box">
+          <label htmlFor="buoy-select" className="selector-label">
+            Select Buoy Location:
           </label>
           <select
             id="buoy-select"
@@ -95,7 +161,7 @@ function extractTimeFromString(timeString) {
             value={selectedBuoy}
             /*function runs on user select*/
             onChange={handleBuoyChange}
-            className="buoy-dropdown"
+            className="location-dropdown"
             >
               {/*creates <option> element for each buoy in array*/}
               {buoyOptions.map((buoy) => (
@@ -106,14 +172,41 @@ function extractTimeFromString(timeString) {
               ))}
             </select>
             <div className="selected-info">
-              {/*gives optional chanining, access name even if buoy not found*/}
+              {/*gives optional chaining, access name even if buoy not found*/}
               Currently Showing: {buoyOptions.find(b => b.id === selectedBuoy)?.name}
             </div>
+        </div>
+        
+        <div className="selector-box">
+          <label htmlFor="webcam-select" className="selector-label">
+            Select Live Webcam (Optional):
+          </label>
+          <select
+            id="webcam-select"
+            value={selectedWebcam}
+            onChange={handleWebcamChange}
+            className="location-dropdown"
+            >
+              <option value="">No Webcam - Buoy Data Only</option>
+              {webcamOptions.map((webcam) => (
+                <option key ={webcam.id} value={webcam.id}>
+                  {webcam.name} - {webcam.location}
+                  </option>
+              ))}
+            </select>
+            <div className="selected-info">
+              {selectedWebcam
+                ? `Visual Data: ${webcamOptions.find(w => w.id === selectedWebcam)?.name}`
+                : 'Visual Conditions Unavailable For This Location'}
+            </div>
+        </div>
       </div>
 
       {data && (
         <div className="chart-container">
-          <h2 className="wave-chart-title">Wave Height Over Time</h2>
+          <h2 className="wave-chart-title">
+            Wave Height Over Time - {buoyOptions.find(b => b.id === selectedBuoy)?.name}
+            </h2>
           {/* ResponsiveContainer makes the chart resize with the window */}
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
@@ -139,8 +232,38 @@ function extractTimeFromString(timeString) {
           </ResponsiveContainer>
         </div>
       )}
+      
+      {/*video analysis - conditional show*/}
+      {selectedWebcam && (
+        <div className="video-analysis-container">
+          {webcamError && (
+            <div className="webcam-error">
+              <h3>Webcam Data Unavailable</h3>
+              <p>{webcamError}</p>
+            </div>
+          )}
 
+          {videoData && !webcamError && (
+            <>
+              <h2 className="analysis-title">
+                Live Visual Conditions - {videoData.location_name}
+              </h2>
+              <div className='analysis-grid'>
+                <div className='analysis-card surfer-card'>
+                  <div className='card-content'>
+                    <div className='card-number'>{videoData.surfer_count}</div>
+                    <div className='card-label'>Surfers Out</div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Metrics Box - displays detailed wave measurements */}
       <div className="metrics-box">
+        <h3>Detailed Wave Measurements</h3>
         {error && <div className="error">Error: {error}</div>}
         {data &&
           data.time.map((time, i) => (
