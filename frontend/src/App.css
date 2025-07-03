@@ -209,4 +209,69 @@ body {
   .location-dropdown {
     min-width: 250px;
   }
+
+}
+.analysis-status {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.analysis-status.online {
+  color: #28a745;
+}
+
+.analysis-status.starting,
+.analysis-status.initializing {
+  color: #ffc107;
+}
+
+.analysis-status.error {
+  color: #dc3545;
+}
+
+.analysis-status.default {
+  color: #6c757d;
+}
+
+.analysis-loading {
+  text-align: center;
+  padding: 2rem;
+  background: #fff3cd;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.loading-steps {
+  text-align: left;
+  display: inline-block;
+}
+
+.loading-note {
+  font-style: italic;
+}
+
+/* Status Indicator */
+.status-indicator {
+  font-size: 1.5rem;
+}
+
+.status-indicator.online {
+  color: #28a745;
+}
+
+.status-indicator.starting,
+.status-indicator.initializing {
+  color: #ffc107;
+}
+
+.status-indicator.error {
+  color: #dc3545;
+}
+
+.last-update {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #666;
 }

@@ -131,9 +131,6 @@ function App() {
 
     const waveInterval = setInterval(() => {
       fetchWaveData(selectedBuoy);
-      if (selectedWebcam) {
-        fetchVideoData(selectedWebcam);
-      }
     } , 180000); //3 minutes
 
     const videoInterval = setInterval(() => {
@@ -245,7 +242,7 @@ const getStatusColor = (status) => {
                 : 'Visual Analysis Unavailable'}
             </div>
             {analysisStatus && (
-              <div className={`analysis-staus ${videoData?.status || 'default'}`}>
+              <div className={`analysis-status ${videoData?.status || 'default'}`}>
                 Status: {analysisStatus}
               </div>
             )}
@@ -298,17 +295,45 @@ const getStatusColor = (status) => {
               <h2 className="analysis-title">
                 Live Visual Conditions - {videoData.location_name}
               </h2>
-              <div className='analysis-grid'>
-                <div className='analysis-card surfer-card'>
-                  <div className='card-content'>
-                    <div className='card-number'>{videoData.surfer_count}</div>
-                    <div className='card-label'>Surfers Out</div>
+              {videoData.status === 'Starting' || videoData.status === 'Initializing' ? (
+                <div className='analysis-loading'>
+                  <h3>Setting up CV/ML Analysis...</h3>
+                  <p>This may take 30-60 seconds as we:</p>
+                  <ul className='loading-steps'>
+                    <li>Connect to the live surf cam stream</li>
+                    <li>Initalize ML Computer Vision model</li>
+                    <li>Begin real-time surfer detection</li>
+                  </ul>
+                  <p className='loading-note'>Please Wait. The analysis will start automatically!</p>
+                </div>
+              ) : (
+                <div className='analysis-grid'>
+                  <div className='analysis-card surfer-card'>
+                    <div className='card-content'>
+                      <div className='card-number'>{videoData.surfer_count}</div>
+                      <div className='card-label'>Surfers Out</div>
+                    </div>
+                  </div>
+
+                  <div className='analysis-card status-card'>
+                    <div className='card-content'>
+                      <div className={`card-number status-indicator ${videoData.status}`}>
+                        {videoData.status === 'online' ? '🟢' : '🔴'}
+                      </div>
+                      <div className='card-label'>Stream Status</div>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {videoData.last_update && (
+                <div className='last-update'>
+                Last Updated: {new Date(videoData.last_update).toLocaleString()}
+                </div>
+              )}
             </>
           )}
-        </div>
+          </div>
       )}
 
       {/* Metrics Box - displays detailed wave measurements */}
