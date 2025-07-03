@@ -1,23 +1,163 @@
 import xarray as xr
 import urllib.request
 import pandas as pd
-
-from flask import Flask
-from flask import jsonify
-from flask import request
-from flask import send_file
-from flask import render_template
-#CORS allows cross-origin requests
-#useful for frontend-backend communication
+import threading
+import time
+import subprocess
+import os
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from datetime import datetime, timezone
+from inference import InferencePipeline
+from dotenv import load_dotenv
+
+load_dotenv()
+api_key = os.getenv("ROBOFLOW_API_KEY")
+workspace_name = os.getenv("ROBOFLOW_WORKSPACE")
+workflow_id = os.getenv("ROBOFLOW_WORKFLOW_ID")
 
 app = Flask(__name__)
 CORS(app)
 
+#global vars store analysis results
+analysis_results = {}
+active_pipelines = {}
+
+class LiveStreamAnalyzer:
+    def __init__(self, webcam_id, hls_url):
+        self.webcam_id = webcam_id
+        self.hls_url = hls_url
+        self.ffmpeg_process = None
+        self.pipeline = None
+        self.stream_url = f"http://localhost:855{webcam_id}/stream.mjpeg"
+        self.latest_result = {
+            'surfer_count': 0,
+            'status': 'Starting',
+            'last_update': None
+        }
+    
+    def roboflow_sink(self, result, video_frame):
+        #processes results from CV inference (roboflow)
+        try: 
+            #extracts surfer count
+            surfer_count = 0
+            if 'predictions' in result:
+                #counts surfers in predictions
+                for prediction in result['predictions']:
+                    if hasattr(prediction, 'predicitons'):
+                        surfer_count += len([p for p in prediction.predicitions
+                                             if p.class_name.lower() in ['person', 'surfer']])
+            #updates latest result
+            self.latest_result = {
+                'surfer_count': surfer_count,
+                'status': 'online',
+                'last_update': datetime.now().isoformat()
+            }
+
+            #stores global results
+            analysis_results[self.webcam_id] = self.latest_result
+            print(f"Updated Analysis for {self.webcam_id}: {surfer_count} surfers detected")
+
+        except Exception as e:
+            print(f"Error Processing Result: {e}")
+            self.latest_result['status'] = 'error'
+    
+    def start_ffmpeg_conversion(self):
+        #starts ffmpeg conversion from HLS to MJPEG
+        port = f"855{self.webcam_id}"
+        self.stream_url = f"http://localhost:{port}/stream.mjpeg"
+        ffmpeg_commands = [
+            
+            'ffmpeg',
+            '-i', self.hls_url,           # Input: your HLS URL
+            '-f', 'mjpeg',             # Output format 
+            # '-vcodec', 'libx264',         # Video codec
+            # '-preset', 'ultrafast',       # Fast encoding for real-time
+            # '-tune', 'zerolatency',       # Minimize latency
+            '-r', '2',                   # Frame rate 
+            '-s', '1280x720',             # Resolution
+            '-listen', '1',               # Listen for incoming connections
+            '-y',                         # Overwrite output
+            self.stream_url               # Output to our pipe
+        ]
+        
+        try:
+            print(f"Starting FFmpeg Conversion for {self.webcam_id} on {self.stream_url}")
+            self.ffmpeg_process = subprocess.Popen(
+                ffmpeg_commands,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            return True
+        except Exception as e:
+            print(f"Error Starting FFmpeg for {self.webcam_id}: {e}")
+            return False
+    
+    def start_roboflow_pipeline(self):
+        #starts Roboflow inference pipeline
+        try:
+            print(f"Connecting to stream: {self.stream_url}")
+            self.pipeline = InferencePipeline.init_with_workflow(
+                api_key=self.api_key,
+                workspace_name=self.workspace_name,
+                workflow_id=self.workflow_id,
+                video_reference=self.stream_url, 
+                max_fps=2,
+                on_prediction=self.roboflow_sink
+            )
+
+            time.sleep(5)
+
+            print("Starting Roboflow Pipeline for {self.webcam_id}...")
+            self.pipeline.start()
+            return True
+        except Exception as e:
+            print(f"Error Starting Roboflow Pipeline: for {self.webcam_id}: {e}")
+            return False
+        
+    def start_analysis(self):
+        #starts the full analysis pipeline
+
+        def run_pipeline():
+            try:
+                if not self.start_ffmpeg_conversion():
+                    self.latest_result['status'] = 'ffmpeg_error'
+                    return
+                if not self.start_roboflow_pipeline():
+                    self.latest_result['status'] = 'roboflow_error'
+                    return
+                
+                self.pipeline.join()
+            
+            except Exception as e:
+                print(f"Pipeline Error for {self.wenbcam_id}: {e}")
+                self.latest_result['status'] = 'error'
+        
+        #runs in separate thread
+        thread = threading.Thread(target=run_pipeline, daemon=True)
+        thread.start()
+        return thread
+    
+    def stop_analysis(self):
+        #stops analysis pipeline
+        if self.pipeline:
+            self.pipeline.terminate()
+        if self.ffmpeg_process:
+            self.ffmpeg_process.terminate()
+            self.ffmpeg_process.wait()
+
+#webcam configurations (modified later)
+Webcam_Configs = {
+    'malibu': {
+        'name': 'Malibu - Point Dume',
+        'location': 'Malibu, CA',
+        'hls_url': 'https://windansea.b-cdn.net/sunba/windansea/chunklist.m3u8',
+        'buoy_nearby': '273'
+    }
+}
+
 @app.route('/')
 def serve_frontend():
-
     return render_template('frontend.html')
 
 @app.route('/api/video-analysis')
@@ -29,20 +169,58 @@ def get_video_analysis():
         #checks if webcam_id is provided and valid
         if not webcam_id:
             return jsonify({'error': 'No Webcam Selected'}), 400
-        if webcam_id not in ['malibu']: #will upgrade later
+        if webcam_id not in Webcam_Configs: #will upgrade later
             return jsonify({'error': 'Webcam Not Available'}), 404
-        #mock data for video analysis, soon to upgrade
-        if webcam_id == 'malibu':
-            mock_video_data = {
+        
+        #analysis starts IF not running already
+        if webcam_id not in active_pipelines:
+            config = Webcam_Configs[webcam_id]
+            analyzer = LiveStreamAnalyzer(webcam_id, config['hls_url'])
+            active_pipelines[webcam_id] = analyzer
+            analyzer.start_analysis()
+
+            #returns intial status
+            return jsonify({
                 'webcam_id': webcam_id,
-                'location_name': 'Malibu',
-                'surfer_Count': 3,
-                'status': 'Online'
-            }
-        return jsonify(mock_video_data)
+                'location_name': config['name'],
+                'surfer_count': 0,
+                'status': 'Starting',
+                'message': 'Analysis Starting, Please Wait...'
+            })
+        
+        #gets latest analysis results
+        if webcam_id in analysis_results:
+            result = analysis_results[webcam_id]
+            config = Webcam_Configs[webcam_id]
+
+            return jsonify({
+                'webcam_id': webcam_id,
+                'location_name': config['name'],
+                'surfer_count': result['surfer_count'],
+                'status': result['status'],
+                'last_update': result['last_update']
+            })
+        else:
+            return jsonify({
+                'webcam_id': webcam_id,
+                'location_name': Webcam_Configs[webcam_id]['name'],
+                'surfer_count': 0,
+                'status': 'Initializing'
+            })
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/stop-analysis/<webcam_id>')
+def stop_analysis(webcam_id):
+    #Stops analysis for SPECIFIC webcam_id
+    if webcam_id in active_pipelines:
+        active_pipelines[webcam_id].stop_analysis()
+        del active_pipelines[webcam_id]
+        if webcam_id in analysis_results:
+            del analysis_results[webcam_id]
+        return jsonify({'message': f'Analysis Stopped for {webcam_id}'})
+    return jsonify({'error': 'No Active Analysis Found'}), 404
 
 #Exisitng surfdata route accepts bupy_id parameter
 @app.route('/api/surfdata')

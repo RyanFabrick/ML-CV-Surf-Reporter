@@ -16,6 +16,7 @@ function App() {
   const [selectedWebcam, setSelectedWebcam]= useState('');
   const [videoData, setVideoData] = useState(null);
   const [webcamError, setWebcamError] = useState(null);
+  const [analysisStatus, setAnalysisStatus] = useState('')
   
   //currently mock buoy data - (tentative update)
   const buoyOptions = [
@@ -44,10 +45,21 @@ function App() {
   // handles ebcam selection changes
   const handleWebcamChange = (event) => {
     const newWebcamId = event.target.value;
+
+    //Stops previous analusis if switching webcams
+    if (selectedWebcam && selectedWebcam !== newWebcamId) {
+      fetch(`http://localhost:5000/api/stop-analysis/${selectedWebcam}`)
+        .catch(err => console.log('Error Stopping Previous Analysos:', err));
+    }
+
+
     setSelectedWebcam(newWebcamId);
+    setVideoData(null);
+    setWebcamError(null);
+    setAnalysisStatus('')
     //data refreshues due to useEffect depednecny
     console.log(`Selected Webcam: ${newWebcamId || 'None'}`);
-  }
+  };
 
   //runs after empty array is ran, after component mounts
   //fetches data from Flask endpoint
@@ -73,9 +85,10 @@ function App() {
 
   const fetchVideoData = (webcamId) => {
     if (!webcamId) {
-      //no webcam selected , clear vid data
+      //no webcam selected , clear data
       setVideoData(null);
       setWebcamError(null);
+      setAnalysisStatus('');
       return;
     }
     
@@ -85,15 +98,29 @@ function App() {
         if (json.error) {
           setWebcamError(`Webcam Error: ${json.error}`);
           setVideoData(null);
+          setAnalysisStatus('error');
         } else {
           setVideoData(json);
           setWebcamError(null);
+          setAnalysisStatus(json.status);
+
+          //Show status messages
+          if (json.status === 'stating') {
+            setAnalysisStatus('Stating Analysis...');
+          } else if (json.status === 'initializing') {
+            setAnalysisStatus('Initializing Analysis...');
+          } else if (json.status === 'online') {
+            setAnalysisStatus('Live'); 
+          } else if (json.status ==='error') {
+            setAnalysisStatus('Analysis Error');
+          }
         }
       })
       .catch((err) => {
         console.error('Webcam Data Fetch Error:', err);
         setWebcamError('Failed to fetch webcam data');
         setVideoData(null);
+        setAnalysisStatus('error');
       });
   };
 
@@ -102,14 +129,23 @@ function App() {
     fetchWaveData(selectedBuoy);
     fetchVideoData(selectedWebcam);
 
-    const interval = setInterval(() => {
+    const waveInterval = setInterval(() => {
       fetchWaveData(selectedBuoy);
       if (selectedWebcam) {
         fetchVideoData(selectedWebcam);
       }
     } , 180000); //3 minutes
+
+    const videoInterval = setInterval(() => {
+      if (selectedWebcam) {
+        fetchVideoData(selectedWebcam);
+      }
+    }, 5000); //5 seconds
     
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(waveInterval);
+      clearInterval(videoInterval);
+    };
 
   }, [selectedBuoy, selectedWebcam]); //rerun when selection changes
 
@@ -140,6 +176,15 @@ function extractTimeFromString(timeString) {
   return timeString.split(' ')[1] || timeString;
 }
 
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'online': return '#28a745';
+    case 'starting': 
+    case 'initializing': return '#ffc107';
+    case 'error': return '#dc3545';
+    default: return '#6c757d';
+  }
+};
 
 //JSK -> html and JS making user interface
 //if error shows <div> with error message
@@ -179,7 +224,7 @@ function extractTimeFromString(timeString) {
         
         <div className="selector-box">
           <label htmlFor="webcam-select" className="selector-label">
-            Select Live Webcam (Optional):
+            Select Live Webcam (CV/ML Analysis):
           </label>
           <select
             id="webcam-select"
@@ -196,9 +241,14 @@ function extractTimeFromString(timeString) {
             </select>
             <div className="selected-info">
               {selectedWebcam
-                ? `Visual Data: ${webcamOptions.find(w => w.id === selectedWebcam)?.name}`
-                : 'Visual Conditions Unavailable For This Location'}
+                ? `CV/ML Analysis: ${webcamOptions.find(w => w.id === selectedWebcam)?.name}`
+                : 'Visual Analysis Unavailable'}
             </div>
+            {analysisStatus && (
+              <div className={`analysis-staus ${videoData?.status || 'default'}`}>
+                Status: {analysisStatus}
+              </div>
+            )}
         </div>
       </div>
 
