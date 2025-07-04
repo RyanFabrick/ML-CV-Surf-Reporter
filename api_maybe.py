@@ -7,6 +7,7 @@ import subprocess
 import os
 import numpy as np
 import cv2
+import traceback
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from datetime import datetime, timezone
@@ -40,15 +41,53 @@ class LiveStreamAnalyzer:
     
     def roboflow_sink(self, result, video_frame):
         #processes results from CV inference (roboflow)
-        try: 
-            #extracts surfer count
+        try:
+            #intializes surfer count
             surfer_count = 0
-            if 'predictions' in result:
-                #counts surfers in predictions
-                for prediction in result['predictions']:
-                    if hasattr(prediction, 'predicitons'):
-                        surfer_count += len([p for p in prediction.predicitions
-                                             if p.class_name.lower() in ['person', 'surfer']])
+            #debugging - type of data received
+            print(f"Result type: {type(result)}")
+            
+            data = result
+            #Checks if 'result' is a tuple
+            if isinstance(result, tuple):
+                print(f"Tuple length: {len(result)}")
+                data = result[0]
+            
+            #Checks if data is 'dict' and 'predicitons' key exists
+            if isinstance(data, dict) and 'predictions' in data:
+                print(f"Found predictions, count: {len(data['predictions'])}")
+
+                #loops through each prediciton
+                #enumerate gives index and item
+                for i, prediction in enumerate(data['predictions']):
+                    print(f"Prediction {i} type: {type(prediction)}")
+                    # checks if prediciton is tuple
+                    if isinstance(prediction, tuple) and len(prediction) >= 6:
+                        print(f"Prediction is tuple with {len(prediction)} elements")
+                        #extracts metadata and gets surfer count
+                        metadata = prediction[5] if len(prediction) > 5 else {}
+                        #checks if metadata is dict
+                        if isinstance(metadata, dict):
+                            #extracts class_name
+                            class_name = metadata.get('class_name', '')
+                            print(f"Class name from metadata: {class_name}")
+                            #checks if class_name is 'Surfer'
+                            #increments counter accordingly
+                            if class_name.lower() == 'surfer':
+                                surfer_count += 1
+                    #alternative, checks if prediciton is dict
+                    elif isinstance(prediction, dict):
+                        #checks class_name
+                        class_name = prediction.get('class', prediction.get('class_name', ''))
+                        print(f"Class name from dict: {class_name}")
+                        #checks if class_name is 'Surfer
+                        #increments counter accordingly
+                        if class_name.lower() == 'surfer':
+                            surfer_count += 1
+            else:
+                #debugging print if DS is unexpected
+                print(f"Data is not a dict with predictions: {type(data)}")
+
             #updates latest result
             self.latest_result = {
                 'surfer_count': surfer_count,
@@ -62,8 +101,9 @@ class LiveStreamAnalyzer:
 
         except Exception as e:
             print(f"Error Processing Result: {e}")
+            print(f"Error location: {traceback.format_exc()}")
             self.latest_result['status'] = 'error'
-    
+            
     def start_ffmpeg_conversion(self):
         #starts ffmpeg conversion from HLS to MJPEG
         port = f"855{self.webcam_id}"
