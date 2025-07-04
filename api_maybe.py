@@ -5,6 +5,8 @@ import threading
 import time
 import subprocess
 import os
+import numpy as np
+import cv2
 from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 from datetime import datetime, timezone
@@ -98,9 +100,9 @@ class LiveStreamAnalyzer:
         try:
             print(f"Connecting to stream: {self.stream_url}")
             self.pipeline = InferencePipeline.init_with_workflow(
-                api_key=self.api_key,
-                workspace_name=self.workspace_name,
-                workflow_id=self.workflow_id,
+                api_key=api_key,
+                workspace_name=workspace_name,
+                workflow_id=workflow_id,
                 video_reference=self.stream_url, 
                 max_fps=2,
                 on_prediction=self.roboflow_sink
@@ -116,6 +118,10 @@ class LiveStreamAnalyzer:
             return False
         
     def start_analysis(self):
+        #debugging 
+        print(f"Starting analysis for webcam: {self.webcam_id}")
+        print(f"HLS URL: {self.hls_url}")
+        print("About to start FFmpeg process...")
         #starts the full analysis pipeline
 
         def run_pipeline():
@@ -130,7 +136,7 @@ class LiveStreamAnalyzer:
                 self.pipeline.join()
             
             except Exception as e:
-                print(f"Pipeline Error for {self.wenbcam_id}: {e}")
+                print(f"Pipeline Error for {self.webcam_id}: {e}")
                 self.latest_result['status'] = 'error'
         
         #runs in separate thread
@@ -163,9 +169,11 @@ def serve_frontend():
 @app.route('/api/video-analysis')
 def get_video_analysis():
     #gets webcam_id from query parameters
-    webcam_id = request.args.get('webcam_id')
 
     try:
+        webcam_id = request.args.get('webcam_id')
+        print(f"Received webcam_id: {webcam_id}")
+
         #checks if webcam_id is provided and valid
         if not webcam_id:
             return jsonify({'error': 'No Webcam Selected'}), 400
@@ -209,6 +217,10 @@ def get_video_analysis():
             })
     
     except Exception as e:
+        print(f"ERROR in video_analysis route: {e}")
+        print(f"Error type: {type(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/stop-analysis/<webcam_id>')
