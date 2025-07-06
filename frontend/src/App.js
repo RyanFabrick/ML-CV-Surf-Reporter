@@ -314,7 +314,16 @@ const getStatusColor = (status) => {
                       <div className='card-label'>Surfers Out</div>
                     </div>
                   </div>
-
+              {videoData.status === 'online' && (
+                <div className="video-preview">
+                  <h3>Live Stream Preview</h3>
+                  <img
+                    src={`http://localhost:5000/video_feed/${selectedWebcam}`}
+                    alt="Live MJPEG Stream"
+                    className="live-stream"
+                  />
+                </div>
+              )}
                   <div className='analysis-card status-card'>
                     <div className='card-content'>
                       <div className={`card-number status-indicator ${videoData.status}`}>
