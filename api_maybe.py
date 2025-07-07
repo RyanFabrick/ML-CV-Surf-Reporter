@@ -8,7 +8,7 @@ import os
 import numpy as np
 import cv2
 import traceback
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, Response
 from flask_cors import CORS
 from datetime import datetime, timezone
 from inference import InferencePipeline
@@ -32,7 +32,8 @@ class LiveStreamAnalyzer:
         self.hls_url = hls_url
         self.ffmpeg_process = None
         self.pipeline = None
-        self.stream_url = f"http://localhost:855{webcam_id}/stream.mjpeg"
+        self.port_number = 8550 + int(webcam_id) if webcam_id.isdigit() else 8551
+        self.stream_url = f"http://localhost:{self.port_number}/stream.mjpeg"
         self.latest_result = {
             'surfer_count': 0,
             'status': 'Starting',
@@ -103,33 +104,53 @@ class LiveStreamAnalyzer:
             print(f"Error Processing Result: {e}")
             print(f"Error location: {traceback.format_exc()}")
             self.latest_result['status'] = 'error'
-            
+
+    def check_ffmpeg_process(self):
+        if self.ffmpeg_process and self.ffmpeg_process.poll() is not None:
+            print("FFmpeg process died, restarting...")
+            try:
+                # Clean up old process
+                if self.ffmpeg_process:
+                    self.ffmpeg_process.terminate()
+                    self.ffmpeg_process.wait(timeout=5)
+                
+                # Restart
+                if not self.start_ffmpeg_conversion():
+                    print("Failed to restart FFmpeg")
+                    self.latest_result['status'] = 'ffmpeg_error'
+                else:
+                    print("FFmpeg restarted successfully")
+                    self.latest_result['status'] = 'online'
+                    
+            except Exception as e:
+                print(f"Error restarting FFmpeg: {e}")
+                self.latest_result['status'] = 'error'
+
     def start_ffmpeg_conversion(self):
-        #starts ffmpeg conversion from HLS to MJPEG
-        port = f"855{self.webcam_id}"
-        self.stream_url = f"http://localhost:{port}/stream.mjpeg"
         ffmpeg_commands = [
-            
             'ffmpeg',
-            '-i', self.hls_url,           # Input: your HLS URL
-            '-f', 'mjpeg',             # Output format 
-            # '-vcodec', 'libx264',         # Video codec
-            # '-preset', 'ultrafast',       # Fast encoding for real-time
-            # '-tune', 'zerolatency',       # Minimize latency
-            '-r', '2',                   # Frame rate 
-            '-s', '1280x720',             # Resolution
-            '-listen', '1',               # Listen for incoming connections
-            '-y',                         # Overwrite output
-            self.stream_url               # Output to our pipe
+            '-re',  # Read input at native frame rate
+            '-i', self.hls_url,
+            '-f', 'mjpeg',
+            '-r', '2',
+            '-s', '1280x720',
+            '-q:v', '2',  # Quality level (2-31, lower is better)
+            '-listen', '1',
+            '-timeout', '10',  # Timeout after 10 seconds of no connection
+            '-analyzeduration', '1000000',  # Faster stream analysis
+            '-probesize', '1000000',
+            '-y',
+            self.stream_url
         ]
         
         try:
             print(f"Starting FFmpeg Conversion for {self.webcam_id} on {self.stream_url}")
-            self.ffmpeg_process = subprocess.Popen(
-                ffmpeg_commands,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
+            with open(f'ffmpeg_{self.webcam_id}.log', 'w') as log_file:
+                self.ffmpeg_process = subprocess.Popen(
+                    ffmpeg_commands,
+                    stderr=log_file,
+                    stdout=subprocess.DEVNULL
+                )
             return True
         except Exception as e:
             print(f"Error Starting FFmpeg for {self.webcam_id}: {e}")
@@ -158,31 +179,43 @@ class LiveStreamAnalyzer:
             return False
         
     def start_analysis(self):
-        #debugging 
         print(f"Starting analysis for webcam: {self.webcam_id}")
         print(f"HLS URL: {self.hls_url}")
-        print("About to start FFmpeg process...")
-        #starts the full analysis pipeline
 
         def run_pipeline():
             try:
                 if not self.start_ffmpeg_conversion():
                     self.latest_result['status'] = 'ffmpeg_error'
                     return
+                
+                # Start health check thread
+                health_thread = threading.Thread(target=self.health_check, daemon=True)
+                health_thread.start()
+
                 if not self.start_roboflow_pipeline():
                     self.latest_result['status'] = 'roboflow_error'
                     return
                 
                 self.pipeline.join()
-            
+                
             except Exception as e:
                 print(f"Pipeline Error for {self.webcam_id}: {e}")
                 self.latest_result['status'] = 'error'
-        
-        #runs in separate thread
+
         thread = threading.Thread(target=run_pipeline, daemon=True)
         thread.start()
         return thread
+
+    def health_check(self):
+        """Continuously check FFmpeg and restart if needed"""
+        while True:
+            time.sleep(5)  # Check every 5 seconds
+            self.check_ffmpeg_process()
+            
+            # Also check if Roboflow is still connected
+            if self.pipeline and not self.pipeline.is_running():
+                print("Roboflow pipeline stopped, attempting to restart...")
+                self.start_roboflow_pipeline()
     
     def stop_analysis(self):
         #stops analysis pipeline
@@ -273,6 +306,20 @@ def stop_analysis(webcam_id):
             del analysis_results[webcam_id]
         return jsonify({'message': f'Analysis Stopped for {webcam_id}'})
     return jsonify({'error': 'No Active Analysis Found'}), 404
+
+@app.route('/video_feed/<webcam_id>')
+def video_feed(webcam_id):
+    if webcam_id not in active_pipelines:
+        return "Webcam not active", 404
+    
+    try:
+        # This is a simple proxy to the MJPEG stream
+        stream_url = active_pipelines[webcam_id].stream_url
+        resp = urllib.request.urlopen(stream_url)
+        return Response(resp.read(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    except Exception as e:
+        print(f"Video feed error: {e}")
+        return "Stream unavailable", 503
 
 #Exisitng surfdata route accepts bupy_id parameter
 @app.route('/api/surfdata')

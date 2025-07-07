@@ -1,7 +1,7 @@
 //useState -> store and track data
 //useEffect -> runs logic after component loads
 import React, { useEffect, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './App.css';
 
 //uses react state to track data and error
@@ -13,10 +13,10 @@ function App() {
   //add state for selected buoy
   const [selectedBuoy, setSelectedBuoy] = useState('273');
   //webcam specific state
-  const [selectedWebcam, setSelectedWebcam]= useState('');
+  const [selectedWebcam, setSelectedWebcam] = useState('');
   const [videoData, setVideoData] = useState(null);
   const [webcamError, setWebcamError] = useState(null);
-  const [analysisStatus, setAnalysisStatus] = useState('')
+  const [analysisStatus, setAnalysisStatus] = useState('');
   
   //currently mock buoy data - (tentative update)
   const buoyOptions = [
@@ -28,11 +28,11 @@ function App() {
 
   //webcam options (tentative update, currently malibu only)
   const webcamOptions = [{
-      id: 'malibu', 
-      name: 'Malibu - Point Dume', 
-      location: 'Malibu, CA',
-      status: 'online',
-      buoy_nearby: '273'
+    id: 'malibu', 
+    name: 'Malibu - Point Dume', 
+    location: 'Malibu, CA',
+    status: 'online',
+    buoy_nearby: '273'
   }];
 
   //function handles buoy selection changes
@@ -42,28 +42,27 @@ function App() {
     console.log(`Selected Buoy: ${newBuoyId}`);
   };
 
-  // handles ebcam selection changes
+  // handles webcam selection changes
   const handleWebcamChange = (event) => {
     const newWebcamId = event.target.value;
 
-    //Stops previous analusis if switching webcams
+    //Stops previous analysis if switching webcams
     if (selectedWebcam && selectedWebcam !== newWebcamId) {
       fetch(`http://localhost:5000/api/stop-analysis/${selectedWebcam}`)
-        .catch(err => console.log('Error Stopping Previous Analysos:', err));
+        .catch(err => console.log('Error Stopping Previous Analysis:', err));
     }
-
 
     setSelectedWebcam(newWebcamId);
     setVideoData(null);
     setWebcamError(null);
-    setAnalysisStatus('')
-    //data refreshues due to useEffect depednecny
+    setAnalysisStatus('');
+    //data refreshes due to useEffect dependency
     console.log(`Selected Webcam: ${newWebcamId || 'None'}`);
   };
 
   //runs after empty array is ran, after component mounts
   //fetches data from Flask endpoint
-  //dtores in data, if error stores error message
+  //stores in data, if error stores error message
   const fetchWaveData = (buoyId) => {
     fetch(`http://localhost:5000/api/surfdata?buoy_id=${buoyId}`)
       .then((res) => res.json())
@@ -85,7 +84,7 @@ function App() {
 
   const fetchVideoData = (webcamId) => {
     if (!webcamId) {
-      //no webcam selected , clear data
+      //no webcam selected, clear data
       setVideoData(null);
       setWebcamError(null);
       setAnalysisStatus('');
@@ -105,13 +104,13 @@ function App() {
           setAnalysisStatus(json.status);
 
           //Show status messages
-          if (json.status === 'stating') {
-            setAnalysisStatus('Stating Analysis...');
+          if (json.status === 'starting') {
+            setAnalysisStatus('Starting Analysis...');
           } else if (json.status === 'initializing') {
             setAnalysisStatus('Initializing Analysis...');
           } else if (json.status === 'online') {
             setAnalysisStatus('Live'); 
-          } else if (json.status ==='error') {
+          } else if (json.status === 'error') {
             setAnalysisStatus('Analysis Error');
           }
         }
@@ -125,26 +124,25 @@ function App() {
   };
 
   useEffect(() => {
-    //intial data fetch
+    //initial data fetch
     fetchWaveData(selectedBuoy);
     fetchVideoData(selectedWebcam);
 
     const waveInterval = setInterval(() => {
       fetchWaveData(selectedBuoy);
-    } , 180000); //3 minutes
+    }, 180000); // 3 minutes
 
     const videoInterval = setInterval(() => {
       if (selectedWebcam) {
         fetchVideoData(selectedWebcam);
       }
-    }, 5000); //5 seconds
+    }, 5000); // 5 seconds
     
     return () => {
       clearInterval(waveInterval);
       clearInterval(videoInterval);
     };
-
-  }, [selectedBuoy, selectedWebcam]); //rerun when selection changes
+  }, [selectedBuoy, selectedWebcam]); // rerun when selection changes
 
   //Prepares data for Recharts
   //transforms raw API data into readable Recharts data
@@ -153,7 +151,7 @@ function App() {
   function prepareChartData(apiData) {
     //creates array of chart points - combines time and wave measurements
     const ChartPoints = apiData.time.map((timeString, index) => {
-      //extras just (HH:MM:SS) from full datetime string
+      //extracts just (HH:MM:SS) from full datetime string
       const timeOnly = extractTimeFromString(timeString);
 
       //creates a data point object from moment in time
@@ -164,46 +162,54 @@ function App() {
       };
     });
 
-    //reverse array - older measurments on left side
+    //reverse array - older measurements on left side
     return ChartPoints;
   }
 
-function extractTimeFromString(timeString) {
-  //splits spaces, takes time, original if no spaces
-  return timeString.split(' ')[1] || timeString;
-}
-
-const getStatusColor = (status) => {
-  switch (status) {
-    case 'online': return '#28a745';
-    case 'starting': 
-    case 'initializing': return '#ffc107';
-    case 'error': return '#dc3545';
-    default: return '#6c757d';
+  function extractTimeFromString(timeString) {
+    //splits spaces, takes time, original if no spaces
+    return timeString.split(' ')[1] || timeString;
   }
-};
 
-//JSK -> html and JS making user interface
-//if error shows <div> with error message
-//if valid data, loops throgh timestamps and metrics dispalyed
+  const getCurrentWaveData = () => {
+    if (!data || !data.waveHs || data.waveHs.length === 0) {
+      return {
+        waveHeight: '--',
+        peakPeriod: '--',
+        waveDirection: '--',
+        avgPeriod: '--'
+      };
+    }
+    
+    const latest = data.waveHs.length - 1;
+    return {
+      waveHeight: data.waveHs[latest]?.toFixed(1) || '--',
+      peakPeriod: data.waveTp[latest]?.toFixed(1) || '--',
+      waveDirection: data.waveDp[latest]?.toFixed(0) || '--',
+      avgPeriod: data.waveTa[latest]?.toFixed(1) || '--'
+    };
+  };
+
+  const currentWave = getCurrentWaveData();
+
+  //JSX -> html and JS making user interface
+  //if error shows <div> with error message
+  //if valid data, loops through timestamps and metrics displayed
   return (
-    <div className="dashboard">
-      <div className="title-box">
-        <div className="title">Surf Forecast Data</div>
-      </div>
-
-      <div className="selection-container">
-        <div className="selector-box">
-          <label htmlFor="buoy-select" className="selector-label">
-            Select Buoy Location:
-          </label>
-          <select
-            id="buoy-select"
-            /*dropdown controlled by react*/
-            value={selectedBuoy}
-            /*function runs on user select*/
-            onChange={handleBuoyChange}
-            className="location-dropdown"
+    <div className="app">
+      {/* Top Navigation */}
+      <nav className="top-nav">
+        <div className="nav-container">
+          <div className="logo">
+            Surf Analytics Dashboard
+          </div>
+          <div className="nav-controls">
+            <select
+              className="nav-select"
+              /*dropdown controlled by react*/
+              value={selectedBuoy}
+              /*function runs on user select*/
+              onChange={handleBuoyChange}
             >
               {/*creates <option> element for each buoy in array*/}
               {buoyOptions.map((buoy) => (
@@ -213,154 +219,215 @@ const getStatusColor = (status) => {
                 </option>
               ))}
             </select>
-            <div className="selected-info">
-              {/*gives optional chaining, access name even if buoy not found*/}
-              Currently Showing: {buoyOptions.find(b => b.id === selectedBuoy)?.name}
-            </div>
-        </div>
-        
-        <div className="selector-box">
-          <label htmlFor="webcam-select" className="selector-label">
-            Select Live Webcam (CV/ML Analysis):
-          </label>
-          <select
-            id="webcam-select"
-            value={selectedWebcam}
-            onChange={handleWebcamChange}
-            className="location-dropdown"
+            <select
+              className="nav-select"
+              value={selectedWebcam}
+              onChange={handleWebcamChange}
             >
               <option value="">No Webcam - Buoy Data Only</option>
               {webcamOptions.map((webcam) => (
-                <option key ={webcam.id} value={webcam.id}>
+                <option key={webcam.id} value={webcam.id}>
                   {webcam.name} - {webcam.location}
-                  </option>
+                </option>
               ))}
             </select>
-            <div className="selected-info">
-              {selectedWebcam
-                ? `CV/ML Analysis: ${webcamOptions.find(w => w.id === selectedWebcam)?.name}`
-                : 'Visual Analysis Unavailable'}
+            <div className="status-indicator">
+              <div className="status-dot"></div>
+              <span>Live</span>
             </div>
-            {analysisStatus && (
-              <div className={`analysis-status ${videoData?.status || 'default'}`}>
-                Status: {analysisStatus}
-              </div>
-            )}
-        </div>
-      </div>
-
-      {data && (
-        <div className="chart-container">
-          <h2 className="wave-chart-title">
-            Wave Height Over Time - {buoyOptions.find(b => b.id === selectedBuoy)?.name}
-            </h2>
-          {/* ResponsiveContainer makes the chart resize with the window */}
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={chartData}>
-              {/* CartesianGrid adds the background grid lines */}
-              <CartesianGrid strokeDasharray="3 3" />
-              {/* XAxis shows the time labels at bottom */}
-              <XAxis dataKey="time" />
-              {/* YAxis shows the wave height values on left */}
-              <YAxis />
-              {/* Tooltip shows details when you hover over points */}
-              <Tooltip />
-              {/* Legend explains what the lines represent */}
-              <Legend />
-              {/* The actual line that shows wave height data */}
-              <Line 
-                type="monotone"           // Smooth curved line
-                dataKey="waveHeight"     // Which data to plot (from chartData)
-                stroke="#156292"         // Line color (your blue theme)
-                strokeWidth={3}          // Line thickness
-                name="Wave Height (m)"   // Label in legend and tooltip
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-      
-      {/*video analysis - conditional show*/}
-      {selectedWebcam && (
-        <div className="video-analysis-container">
-          {webcamError && (
-            <div className="webcam-error">
-              <h3>Webcam Data Unavailable</h3>
-              <p>{webcamError}</p>
-            </div>
-          )}
-
-          {videoData && !webcamError && (
-            <>
-              <h2 className="analysis-title">
-                Live Visual Conditions - {videoData.location_name}
-              </h2>
-              {videoData.status === 'Starting' || videoData.status === 'Initializing' ? (
-                <div className='analysis-loading'>
-                  <h3>Setting up CV/ML Analysis...</h3>
-                  <p>This may take 30-60 seconds as we:</p>
-                  <ul className='loading-steps'>
-                    <li>Connect to the live surf cam stream</li>
-                    <li>Initalize ML Computer Vision model</li>
-                    <li>Begin real-time surfer detection</li>
-                  </ul>
-                  <p className='loading-note'>Please Wait. The analysis will start automatically!</p>
-                </div>
-              ) : (
-                <div className='analysis-grid'>
-                  <div className='analysis-card surfer-card'>
-                    <div className='card-content'>
-                      <div className='card-number'>{videoData.surfer_count}</div>
-                      <div className='card-label'>Surfers Out</div>
-                    </div>
-                  </div>
-              {videoData.status === 'online' && (
-                <div className="video-preview">
-                  <h3>Live Stream Preview</h3>
-                  <img
-                    src={`http://localhost:5000/video_feed/${selectedWebcam}`}
-                    alt="Live MJPEG Stream"
-                    className="live-stream"
-                  />
-                </div>
-              )}
-                  <div className='analysis-card status-card'>
-                    <div className='card-content'>
-                      <div className={`card-number status-indicator ${videoData.status}`}>
-                        {videoData.status === 'online' ? '🟢' : '🔴'}
-                      </div>
-                      <div className='card-label'>Stream Status</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {videoData.last_update && (
-                <div className='last-update'>
-                Last Updated: {new Date(videoData.last_update).toLocaleString()}
-                </div>
-              )}
-            </>
-          )}
           </div>
-      )}
+        </div>
+      </nav>
 
-      {/* Metrics Box - displays detailed wave measurements */}
-      <div className="metrics-box">
-        <h3>Detailed Wave Measurements</h3>
-        {error && <div className="error">Error: {error}</div>}
-        {data &&
-          data.time.map((time, i) => (
-            <div key={i} className="metric">
-              <strong>Time:</strong> {time} <br />
-              <strong>Wave Height:</strong> {data.waveHs[i]} meters <br />
-              <strong>Peak Period:</strong> {data.waveTp[i]} seconds <br />
-              <strong>Peak Direction:</strong> {data.waveDp[i]} degrees <br />
-              <strong>Average Period:</strong> {data.waveTa[i]} seconds <br />
-              <strong>Mean Zero-Up Crossing Period:</strong> {data.waveTz[i]} seconds <br />
-              <strong>Peak Power Spectral Density:</strong> {data.wavePeakPSD[i]} m²/Hz
+      {/* Main Dashboard */}
+      <div className="dashboard">
+        {/* Video Analysis Panel */}
+        <div className="panel video-panel">
+          <div className="panel-header">
+            <h2 className="panel-title">Live Video Analysis</h2>
+          </div>
+          <div className="analysis-grid">
+            <div className="metric-card">
+              <div className="metric-value">
+                {videoData ? videoData.surfer_count : '--'}
+              </div>
+              <div className="metric-label">Surfers Out</div>
             </div>
-          ))}
+            <div className="metric-card">
+              <div className="metric-value">
+                {videoData && videoData.status === 'online' ? '🟢' : '🔴'}
+              </div>
+              <div className="metric-label">Stream Status</div>
+            </div>
+          </div>
+          <div className="video-preview">
+            {!selectedWebcam ? (
+              <div>Select a webcam to view live analysis</div>
+            ) : webcamError ? (
+              <div className="error">{webcamError}</div>
+            ) : videoData && (videoData.status === 'starting' || videoData.status === 'initializing') ? (
+              <div className="analysis-loading">
+                <h3>Setting up CV/ML Analysis...</h3>
+                <ul className="loading-steps">
+                  <li>Connect to the live surf cam stream</li>
+                  <li>Initialize ML Computer Vision model</li>
+                  <li>Begin real-time surfer detection</li>
+                </ul>
+                <p className="loading-note">Please wait. The analysis will start automatically!</p>
+              </div>
+            ) : videoData && videoData.status === 'online' ? (
+              <div>
+                <div>Live analysis active</div>
+                <small>Stream: {videoData.location_name}</small>
+                {/* Optional: Add live stream preview */}
+                <img
+                  src={`http://localhost:5000/video_feed/${selectedWebcam}`}
+                  alt="Live MJPEG Stream"
+                  className="live-stream"
+                  style={{ maxWidth: '100%', marginTop: '10px' }}
+                />
+              </div>
+            ) : (
+              <div>Initializing video analysis...</div>
+            )}
+          </div>
+        </div>
+
+        {/* Current Wave Data Panel */}
+        <div className="panel wave-panel">
+          <div className="panel-header">
+            <h2 className="panel-title">Current Wave Conditions</h2>
+          </div>
+          <div className="wave-metrics">
+            <div className="wave-metric">
+              <div className="wave-metric-label">Wave Height</div>
+              <div className="wave-metric-value">
+                {currentWave.waveHeight}
+                <span className="wave-metric-unit">m</span>
+              </div>
+            </div>
+            <div className="wave-metric">
+              <div className="wave-metric-label">Peak Period</div>
+              <div className="wave-metric-value">
+                {currentWave.peakPeriod}
+                <span className="wave-metric-unit">s</span>
+              </div>
+            </div>
+            <div className="wave-metric">
+              <div className="wave-metric-label">Direction</div>
+              <div className="wave-metric-value">
+                {currentWave.waveDirection}
+                <span className="wave-metric-unit">°</span>
+              </div>
+            </div>
+            <div className="wave-metric">
+              <div className="wave-metric-label">Avg Period</div>
+              <div className="wave-metric-value">
+                {currentWave.avgPeriod}
+                <span className="wave-metric-unit">s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Chart Panel */}
+        <div className="panel chart-panel">
+          <div className="panel-header">
+            <h2 className="panel-title">Wave Height Timeline</h2>
+          </div>
+          <div className="chart-container">
+            {error ? (
+              <div className="error">Error: {error}</div>
+            ) : !data ? (
+              <div className="loading">Loading chart data...</div>
+            ) : (
+              /* ResponsiveContainer makes the chart resize with the window */
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData}>
+                  {/* CartesianGrid adds the background grid lines */}
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
+                  {/* XAxis shows the time labels at bottom */}
+                  <XAxis 
+                    dataKey="time" 
+                    stroke="#a0a0a0"
+                    fontSize={12}
+                  />
+                  {/* YAxis shows the wave height values on left */}
+                  <YAxis 
+                    stroke="#a0a0a0"
+                    fontSize={12}
+                  />
+                  {/* Tooltip shows details when you hover over points */}
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: '#1a1a1a',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      borderRadius: '8px',
+                      color: '#ffffff'
+                    }}
+                  />
+                  {/* Legend explains what the lines represent */}
+                  <Legend />
+                  {/* The actual line that shows wave height data */}
+                  <Line 
+                    type="monotone"           // Smooth curved line
+                    dataKey="waveHeight"     // Which data to plot (from chartData)
+                    stroke="#00d4ff"         // Line color (your blue theme)
+                    strokeWidth={2}          // Line thickness
+                    name="Wave Height (m)"   // Label in legend and tooltip
+                    dot={{ fill: '#00d4ff', strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, fill: '#00d4ff' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+
+        {/* Historical Data Panel */}
+        <div className="panel historical-panel">
+          <div className="panel-header">
+            <h2 className="panel-title">Historical Wave Data</h2>
+          </div>
+          <div className="data-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Wave Height</th>
+                  <th>Peak Period</th>
+                  <th>Direction</th>
+                  <th>Avg Period</th>
+                  <th>Zero Cross</th>
+                  <th>Peak PSD</th>
+                </tr>
+              </thead>
+              <tbody>
+                {error ? (
+                  <tr>
+                    <td colSpan="7" className="error">Error: {error}</td>
+                  </tr>
+                ) : !data ? (
+                  <tr>
+                    <td colSpan="7" className="loading">Loading historical data...</td>
+                  </tr>
+                ) : (
+                  data.time.map((time, i) => (
+                    <tr key={i}>
+                      <td>{time}</td>
+                      <td>{data.waveHs[i]?.toFixed(1) || '--'} m</td>
+                      <td>{data.waveTp[i]?.toFixed(1) || '--'} s</td>
+                      <td>{data.waveDp[i]?.toFixed(0) || '--'}°</td>
+                      <td>{data.waveTa[i]?.toFixed(1) || '--'} s</td>
+                      <td>{data.waveTz[i]?.toFixed(1) || '--'} s</td>
+                      <td>{data.wavePeakPSD[i]?.toFixed(3) || '--'} m²/Hz</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
