@@ -11,7 +11,7 @@ function App() {
   //error -> possible error during fetch
   const [error, setError] = useState(null);
   //add state for selected buoy
-  const [selectedBuoy, setSelectedBuoy] = useState('273');
+  const [selectedBuoy, setSelectedBuoy] = useState('');
   //webcam specific state
   const [selectedWebcam, setSelectedWebcam] = useState('');
   const [videoData, setVideoData] = useState(null);
@@ -80,6 +80,14 @@ function App() {
   //fetches data from Flask endpoint
   //stores in data, if error stores error message
   const fetchWaveData = (buoyId) => {
+
+    //does not fetch if no buoy selected
+    if (!buoyId) {
+      setData(null);
+      setError(null);
+      return;
+    }
+
     fetch(`http://localhost:5000/api/surfdata?buoy_id=${buoyId}`)
       .then((res) => res.json())
       .then((json) => {
@@ -167,9 +175,14 @@ function App() {
   function prepareChartData(apiData) {
     //creates array of chart points - combines time and wave measurements
     const ChartPoints = apiData.time.map((timeString, index) => {
-      //extracts just (HH:MM:SS) from full datetime string
-      const timeOnly = extractTimeFromString(timeString);
-
+      //converts to date object
+      const dateObj = new Date(timeString);
+      //formats to 12 hr time with am/pm
+      const timeOnly = dateObj.toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
       //creates a data point object from moment in time
       return {
         time: timeOnly, //x-axis
@@ -177,7 +190,6 @@ function App() {
         peakPeriod: apiData.waveTp[index] //y-axis
       };
     });
-
     //reverse array - older measurements on left side
     return ChartPoints;
   }
@@ -227,6 +239,7 @@ function App() {
               /*function runs on user select*/
               onChange={handleBuoyChange}
             >
+              <option value="">Select Buoy</option>
               {/*creates <option> element for each buoy in array*/}
               {buoyOptions.map((buoy) => (
                 /*unique keys for list items*/
@@ -240,7 +253,7 @@ function App() {
               value={selectedWebcam}
               onChange={handleWebcamChange}
             >
-              <option value="">No Webcam - Buoy Data Only</option>
+              <option value="">Select Live Surfcam</option>
               {webcamOptions.map((webcam) => (
                 <option key={webcam.id} value={webcam.id}>
                   {webcam.name} - {webcam.location}
@@ -260,7 +273,7 @@ function App() {
         {/* Video Analysis Panel */}
         <div className="panel video-panel">
           <div className="panel-header">
-            <h2 className="panel-title">Live Video Analysis</h2>
+            <h2 className="panel-title">Live Computer Vision Surfcam Analysis</h2>
           </div>
           <div className="analysis-grid">
             <div className="metric-card">
@@ -295,13 +308,6 @@ function App() {
               <div>
                 <div>Live analysis active</div>
                 <small>Stream: {videoData.location_name}</small>
-                {/* Optional: Add live stream preview */}
-                <img
-                  src={`http://localhost:5000/video_feed/${selectedWebcam}`}
-                  alt="Live MJPEG Stream"
-                  className="live-stream"
-                  style={{ maxWidth: '100%', marginTop: '10px' }}
-                />
               </div>
             ) : (
               <div>Initializing video analysis...</div>
@@ -314,6 +320,13 @@ function App() {
           <div className="panel-header">
             <h2 className="panel-title">Current Wave Conditions</h2>
           </div>
+          {! selectedBuoy ? (
+            <div className="wave-metrics">
+              <div className="wave-metric">
+                <div className="wave-metric-label">Select a buoy to view wave data</div>
+              </div>
+            </div>
+      ) :  (
           <div className="wave-metrics">
             <div className="wave-metric">
               <div className="wave-metric-label">Wave Height</div>
@@ -344,6 +357,7 @@ function App() {
               </div>
             </div>
           </div>
+          )}
         </div>
 
         {/* Chart Panel */}
@@ -352,7 +366,9 @@ function App() {
             <h2 className="panel-title">Wave Height Timeline</h2>
           </div>
           <div className="chart-container">
-            {error ? (
+            {!selectedBuoy ? (
+              <div className="loading">Select a buoy to view wave data chart</div>
+            ) : error ? (
               <div className="error">Error: {error}</div>
             ) : !data ? (
               <div className="loading">Loading chart data...</div>
@@ -409,7 +425,7 @@ function App() {
             <table>
               <thead>
                 <tr>
-                  <th>Time</th>
+                  <th>Date and Time</th>
                   <th>Wave Height</th>
                   <th>Peak Period</th>
                   <th>Direction</th>
@@ -419,7 +435,11 @@ function App() {
                 </tr>
               </thead>
               <tbody>
-                {error ? (
+                {!selectedBuoy ? (
+                  <tr>
+                    <td colSpan="7" className="loading">Select a buoy to view historical data</td>
+                  </tr>
+                ) :error ? (
                   <tr>
                     <td colSpan="7" className="error">Error: {error}</td>
                   </tr>

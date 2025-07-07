@@ -388,7 +388,7 @@ def get_surf_data():
             #converts to pandas.Timestamp
             timestamp = pd.to_datetime(t)
             #formats as 'YYY-MM-DD HH:MM'
-            formatted = timestamp.strftime('%Y-%m-%d %H:%M')
+            formatted = timestamp.strftime('%Y-%m-%d %I:%M %p')
             #appends to list
             readable_time.append(formatted)
 
