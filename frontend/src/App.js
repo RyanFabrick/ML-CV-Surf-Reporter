@@ -20,20 +20,36 @@ function App() {
   
   //currently mock buoy data - (tentative update)
   const buoyOptions = [
-    { id: '273', name: 'Point Dume, CA', location: 'Malibu' },
-    { id: '191', name: 'Santa Monica Bay, CA', location: 'Santa Monica' },
-    { id: '215', name: 'Harvest, CA', location: 'Point Arguello' },
-    { id: '067', name: 'San Francisco Bar, CA', location: 'San Francisco' }
+    { id: '273', name: 'King-Poloa, AS', location: 'Samoan Islands' },
+    { id: '157', name: 'Point Sur, CA', location: 'California' },
+    { id: '106', name: 'Waimea Bay, HI', location: 'Hawaii' },
+    { id: '067', name: 'San Nicolas Island, CA', location: 'Channel Islands' }
   ];
 
   //webcam options (tentative update, currently malibu only)
-  const webcamOptions = [{
-    id: 'malibu', 
-    name: 'Malibu - Point Dume', 
-    location: 'Malibu, CA',
+  const webcamOptions = [
+  {
+    id: 'Windansea', 
+    name: 'Windansea - La Jolla', 
+    location: 'La Jolla, CA',
     status: 'online',
-    buoy_nearby: '273'
-  }];
+  },
+
+  {
+    id: 'Long Beach', 
+    name: 'Long Beach - New York', 
+    location: 'Long Beach, NY',
+    status: 'online',
+  },
+
+  {
+    id: 'Emerald Isle', 
+    name: 'Emerald Isle - North Carolina', 
+    location: 'Bogue Banks, NC',
+    status: 'online',
+  }
+
+];
 
   //function handles buoy selection changes
   const handleBuoyChange = (event) => {
