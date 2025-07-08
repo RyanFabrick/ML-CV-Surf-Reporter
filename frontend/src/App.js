@@ -1,6 +1,6 @@
 //useState -> store and track data
 //useEffect -> runs logic after component loads
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 // Import components
@@ -22,14 +22,24 @@ function App() {
   const [selectedBuoy, setSelectedBuoy] = useState('');
   //webcam specific state
   const [selectedWebcam, setSelectedWebcam] = useState('');
-  
   //state for navigation
   const [currentPage, setCurrentPage] = useState('dashboard');
-  
+  //settings state
+  const [theme, setTheme] = useState('dark')
+  const [fontSize, setFontSize] = useState(100)
+
+  //applies theme and font size throughout application
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.style.fontSize = `${fontSize}%`;
+
+    //saves to localStorage
+    localStorage.setItem('surf-analytics-theme', theme);
+    localStorage.setItem('surf-analytics-font-size', fontSize.toString());
+  })
   // Use custom hooks for data fetching
   const { data, error, fetchWaveData } = useWaveData(selectedBuoy);
   const { videoData, webcamError, analysisStatus, fetchVideoData } = useVideoData(selectedWebcam);
-
   //navigation handler
   const handleNavigation = (page) => {
     setCurrentPage(page);
@@ -57,11 +67,29 @@ function App() {
     console.log(`Selected Webcam: ${newWebcamId || 'None'}`);
   };
 
+  //theme change handler
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+  };
+
+  //font size change handler
+  const handleFontSizeChange = (newFontSize) => {
+    setFontSize(newFontSize);
+  };
+
   // Render different pages based on current page state
   const renderPage = () => {
     switch (currentPage) {
       case 'settings':
-        return <SettingsPage onNavigate={handleNavigation} />;
+        return (
+        <SettingsPage
+        onNavigate={handleNavigation}
+        theme={theme}
+        onThemeChange={handleThemeChange}
+        fontSize={fontSize}
+        onFontSizeChange={handleFontSizeChange}
+        />
+        ); 
       case 'about':
         return <AboutPage onNavigate={handleNavigation} />;
       case 'dashboard':

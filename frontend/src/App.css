@@ -655,3 +655,379 @@ body {
         text-align: center;
     }
 }
+
+/* Settings Page Styles */
+.settings-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+}
+
+.settings-section h3 {
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.setting-item:hover {
+    background: var(--panel-hover-bg);
+    border-color: var(--accent-color-dim);
+}
+
+.setting-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.setting-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--toggle-bg);
+    transition: 0.4s;
+    border-radius: 34px;
+    border: 1px solid var(--border-color);
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 3px;
+    background: var(--toggle-thumb);
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.toggle-input:checked + .toggle-slider {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.toggle-input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+    background: #ffffff;
+}
+
+/* Font Size Slider Styles */
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 250px;
+}
+
+.slider-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.font-size-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--slider-bg);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.font-size-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    border: 2px solid var(--bg-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.font-size-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    border: 2px solid var(--bg-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Preview Section Styles */
+.preview-container {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.preview-text h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.preview-text p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.preview-metrics {
+    display: flex;
+    gap: 2rem;
+}
+
+.preview-metric {
+    text-align: center;
+}
+
+.preview-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.preview-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* CSS Variables for Theme Support */
+:root {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #121212;
+    --panel-bg: rgba(18, 18, 18, 0.8);
+    --panel-hover-bg: rgba(255, 255, 255, 0.08);
+    --text-primary: #ffffff;
+    --text-secondary: #a0a0a0;
+    --accent-color: #00d4ff;
+    --accent-color-dim: rgba(0, 212, 255, 0.3);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --toggle-bg: rgba(255, 255, 255, 0.1);
+    --toggle-thumb: #ffffff;
+    --slider-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* Light Theme Variables */
+[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --panel-bg: rgba(255, 255, 255, 0.9);
+    --panel-hover-bg: rgba(0, 0, 0, 0.05);
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --accent-color: #0066cc;
+    --accent-color-dim: rgba(0, 102, 204, 0.3);
+    --border-color: rgba(0, 0, 0, 0.1);
+    --toggle-bg: rgba(0, 0, 0, 0.1);
+    --toggle-thumb: #333333;
+    --slider-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* Update existing styles to use CSS variables */
+[data-theme="light"] body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .top-nav {
+    background: rgba(248, 249, 250, 0.95);
+    border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .logo {
+    color: var(--accent-color);
+}
+
+[data-theme="light"] .logo:hover {
+    color: #0052a3;
+}
+
+[data-theme="light"] .nav-button {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .nav-button:hover {
+    color: var(--text-primary);
+    background: var(--panel-hover-bg);
+}
+
+[data-theme="light"] .nav-button.active {
+    color: var(--accent-color);
+    background: var(--accent-color-dim);
+}
+
+[data-theme="light"] .nav-select {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .nav-select option {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .panel:hover {
+    border-color: var(--accent-color-dim);
+    box-shadow: 0 8px 32px rgba(0, 102, 204, 0.1);
+}
+
+[data-theme="light"] .panel-title {
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .panel-title::before {
+    background: linear-gradient(135deg, var(--accent-color), #0052a3);
+}
+
+[data-theme="light"] .metric-card {
+    background: var(--panel-hover-bg);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .metric-card:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .metric-value {
+    color: var(--accent-color);
+}
+
+[data-theme="light"] .metric-label {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .page-content {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="light"] .page-content h2 {
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .page-content p {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .page-header h1 {
+    color: var(--accent-color);
+}
+
+[data-theme="light"] .back-button {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .back-button:hover {
+    background: var(--accent-color-dim);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+/* Update dark theme to use variables for consistency */
+[data-theme="dark"] body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .top-nav {
+    background: rgba(18, 18, 18, 0.95);
+    border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .panel:hover {
+    border-color: var(--accent-color-dim);
+    box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
+}
+
+[data-theme="dark"] .page-content {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+}
+
+/* Responsive adjustments for settings */
+@media (max-width: 768px) {
+    .setting-item {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .slider-container {
+        justify-content: center;
+        min-width: auto;
+    }
+    
+    .preview-metrics {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}

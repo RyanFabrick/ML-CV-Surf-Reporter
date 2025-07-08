@@ -10,11 +10,7 @@ const WaveDataPanel = ({ selectedBuoy, data }) => {
         <h2 className="panel-title">Current Wave Conditions</h2>
       </div>
       {!selectedBuoy ? (
-        <div className="wave-metrics">
-          <div className="wave-metric">
-            <div className="wave-metric-label">Select a buoy to view wave data</div>
-          </div>
-        </div>
+        <div className="loading">Select a buoy to view current wave data</div>
       ) : (
         <div className="wave-metrics">
           <div className="wave-metric">
