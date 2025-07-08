@@ -1,5 +1,2 @@
 *.nc
 .env
-frames/
-downloads/
-static/

@@ -1,0 +1,1 @@
+writing this later about scripts/code i used for development, testing, and more.
