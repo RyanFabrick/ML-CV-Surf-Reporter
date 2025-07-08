@@ -1,0 +1,10 @@
+flask
+flask-cors
+xarray
+pandas
+numpy
+opencv-python
+python-dotenv
+inference
+netcdf4
+h5netcdf
