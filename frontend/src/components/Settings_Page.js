@@ -23,7 +23,7 @@ const SettingsPage = ({ onNavigate, theme, onThemeChange, fontSize, onFontSizeCh
             type="checkbox"
             id="theme-toggle"
             className="toggle-input"
-            onchecked={theme === 'dark'}
+            checked={theme === 'dark'}
             onChange={(e) => onThemeChange(e.target.checked ? 'dark' : 'light')}
             />
             <span className="toggle-slider"></span>
@@ -55,7 +55,7 @@ const SettingsPage = ({ onNavigate, theme, onThemeChange, fontSize, onFontSizeCh
             <span className="slider-label">Large</span>
           </div>
         </div>
-        <p className="setting=description">
+        <p className="setting-description">
           Adjust text size for entire application
         </p>
       </div>

@@ -24,22 +24,36 @@ function App() {
   const [selectedWebcam, setSelectedWebcam] = useState('');
   //state for navigation
   const [currentPage, setCurrentPage] = useState('dashboard');
-  //settings state
-  const [theme, setTheme] = useState('dark')
-  const [fontSize, setFontSize] = useState(100)
+  //settings state - initialize with saved values or defaults
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('surf-analytics-theme');
+    return savedTheme || 'dark';
+  });
+  const [fontSize, setFontSize] = useState(() => {
+    const savedFontSize = localStorage.getItem('surf-analytics-font-size');
+    return savedFontSize ? parseInt(savedFontSize) : 100;
+  });
 
   //applies theme and font size throughout application
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.style.fontSize = `${fontSize}%`;
+  }, [theme, fontSize]); // Only run when theme or fontSize changes
 
-    //saves to localStorage
+  //save theme to localStorage when it changes
+  useEffect(() => {
     localStorage.setItem('surf-analytics-theme', theme);
+  }, [theme]);
+
+  //save font size to localStorage when it changes
+  useEffect(() => {
     localStorage.setItem('surf-analytics-font-size', fontSize.toString());
-  })
+  }, [fontSize]);
+
   // Use custom hooks for data fetching
   const { data, error, fetchWaveData } = useWaveData(selectedBuoy);
   const { videoData, webcamError, analysisStatus, fetchVideoData } = useVideoData(selectedWebcam);
+  
   //navigation handler
   const handleNavigation = (page) => {
     setCurrentPage(page);
@@ -175,7 +189,6 @@ function App() {
         </div>
       </nav>
 
-      {/* Main Content Area */}
       {renderPage()}
     </div>
   );
