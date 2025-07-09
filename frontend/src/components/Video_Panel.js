@@ -1,10 +1,28 @@
 import React from 'react';
 
-const VideoPanel = ({ selectedWebcam, videoData, webcamError, analysisStatus }) => {
+const VideoPanel = ({ selectedWebcam, videoData, webcamError, analysisStatus, onNavigate }) => {
+  const handleHelpClick = () => {
+    onNavigate('about');
+    //scrolls to CV section after delay
+    setTimeout(() => {
+      const cvSection = document.querySelector('.settings-section h3');
+      if (cvSection && cvSection.textContent === 'Computer Vision Works') {
+        cvSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
   return (
     <div className="panel video-panel">
       <div className="panel-header">
         <h2 className="panel-title">Live Computer Vision Surfcam Analysis</h2>
+        <div 
+          className="help-icon"
+          onClick={handleHelpClick}
+          title="How does this computer vision model work?"
+        >
+          ?
+        </div>
       </div>
       <div className="analysis-grid">
         <div className="metric-card">

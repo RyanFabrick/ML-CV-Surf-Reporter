@@ -986,3 +986,74 @@ body {
     width: 100%;
   }
 }
+
+/* Help Icon Styles */
+.help-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--panel-bg);
+    border: 2px solid var(--accent-color);
+    color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    user-select: none;
+    position: relative;
+}
+
+.help-icon:hover {
+    background: var(--accent-color);
+    color: #ffffff;
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px var(--shadow-accent);
+}
+
+.help-icon:active {
+    transform: scale(0.95);
+}
+
+/* Tooltip styling (optional enhancement) */
+.help-icon::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: normal;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 9999;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 5px;
+}
+
+.help-icon:hover::after {
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .help-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+    }
+    
+    .help-icon::after {
+        font-size: 0.7rem;
+        padding: 0.4rem;
+    }
+}

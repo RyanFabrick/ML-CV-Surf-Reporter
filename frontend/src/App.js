@@ -117,6 +117,7 @@ function App() {
             videoData={videoData}
             webcamError={webcamError}
             analysisStatus={analysisStatus}
+            onNavigate={handleNavigation}
           />
         );
     }

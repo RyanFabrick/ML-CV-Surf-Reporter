@@ -12,7 +12,8 @@ const DashboardPage = ({
   error, 
   videoData, 
   webcamError, 
-  analysisStatus 
+  analysisStatus,
+  onNavigate
 }) => (
   <div className="dashboard">
     {/* Video Analysis Panel */}
@@ -21,6 +22,7 @@ const DashboardPage = ({
       videoData={videoData}
       webcamError={webcamError}
       analysisStatus={analysisStatus}
+      onNavigate={onNavigate}
     />
 
     {/* Current Wave Data Panel */}
