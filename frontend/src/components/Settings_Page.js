@@ -15,18 +15,22 @@ const SettingsPage = ({ onNavigate, theme, onThemeChange, fontSize, onFontSizeCh
       <div className="settings-section">
         <h3>Theme</h3>
         <div className="setting-item">
-          <label htmlFor="theme-toggle" className="setting-label">
-            Dark Mode
+          <label className="setting-label">
+            Choose Theme
           </label>
-          <div className="toggle-switch">
-            <input
-            type="checkbox"
-            id="theme-toggle"
-            className="toggle-input"
-            checked={theme === 'dark'}
-            onChange={(e) => onThemeChange(e.target.checked ? 'dark' : 'light')}
-            />
-            <span className="toggle-slider"></span>
+          <div className="theme-buttons">
+            <button 
+              className={`theme-button ${theme === 'dark' ? 'active' : ''}`}
+              onClick={() => onThemeChange('dark')}
+            >
+              Dark Mode
+            </button>
+            <button 
+              className={`theme-button ${theme === 'light' ? 'active' : ''}`}
+              onClick={() => onThemeChange('light')}
+            >
+              Light Mode
+            </button>
           </div>
         </div>
         <p className="setting-description">

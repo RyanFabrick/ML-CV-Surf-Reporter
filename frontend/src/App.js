@@ -131,7 +131,7 @@ function App() {
       <nav className="top-nav">
         <div className="nav-container">
           <div className="logo" onClick={() => handleNavigation('dashboard')}>
-            Surf Analytics Dashboard
+            Surf Report Data
           </div>
           
           {/* New Navigation Menu */}
