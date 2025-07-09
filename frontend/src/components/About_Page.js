@@ -40,6 +40,17 @@ const AboutPage = ({ onNavigate }) => (
             </p>
           </div>
         </div>
+        <div className="setting-item">
+          <div>
+            <div className="setting-label">Computer Vision & Machine Learning Model in Action</div>
+            <p className="setting-description">
+              <video width="100%" controls>
+                <source src="/videos/Example_Video.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="settings-section">
@@ -48,7 +59,9 @@ const AboutPage = ({ onNavigate }) => (
           <div>
             <div className="setting-label">Wave Height (Hs)</div>
             <p className="setting-description">
-              write stuff here
+              Signficant wave height is defined as the average height (meters) of the highest 
+              one-third of waves. 
+              <strong> This gives a good estimate of how big the waves will feel in the lineup for surfers!</strong>
             </p>
           </div>
         </div>
@@ -56,7 +69,9 @@ const AboutPage = ({ onNavigate }) => (
           <div>
             <div className="setting-label">Peak Period (Tp)</div>
             <p className="setting-description">
-              write stuff here
+              The peak period is defined as the time interval (seconds) between waves with
+              with the highest energy. This indicates the frequency of the dominant wave system. 
+              <strong> Longer peak periods typically mean more powerful, cleaner, and better-shaped waves for surfing!</strong>
             </p>
           </div>
         </div>
@@ -64,7 +79,9 @@ const AboutPage = ({ onNavigate }) => (
           <div>
             <div className="setting-label">Wave Direction (Dp)</div>
             <p className="setting-description">
-              write stuff here
+              Wave direction is defined as as the directions (degrees tru) from which the peak
+              energy waves are coming. 
+              <strong> This helps surfers determine whether a particular break will be working based on how swell hits the coastline!</strong>
             </p>
           </div>
         </div>
@@ -72,15 +89,20 @@ const AboutPage = ({ onNavigate }) => (
           <div>
             <div className="setting-label">Average Period (Ta)</div>
             <p className="setting-description">
-              write stuff here
+              The average period is defined as a representation of the mean time between all waves in the
+              specturm, weighted by energy. It reflects the general energy distribution across all
+              wave frequencies. 
+              <strong> It gives surfers a sense of overall swell consistency and helps distinguish between mixed swell energy!</strong>
             </p>
           </div>
         </div>
         <div className="setting-item">
           <div>
-            <div className="setting-label">Zero Crossing Period (Tz)</div>
+            <div className="setting-label">Zero Up-Crossing Period (Tz)</div>
             <p className="setting-description">
-              write stuff here
+              Zero up-crossing period is defiend as the average time between upward crossings of the mean sea 
+              level by wave crests. 
+              <strong> Surfers can use this to gauge wave rhythm and timing. Shorter periods usually mean choppier conditions!</strong>
             </p>
           </div>
         </div>
@@ -88,7 +110,8 @@ const AboutPage = ({ onNavigate }) => (
           <div>
             <div className="setting-label">Peak PSD</div>
             <p className="setting-description">
-              write stuff here
+              Peak power spectral density is defined as the highest energy value (m²/Hz) found in the wave spectrum. 
+              <strong> Higher PSD means more focused swell energy, often translating into stronger and more surfable waves!</strong>
             </p>
           </div>
         </div>
