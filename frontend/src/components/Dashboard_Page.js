@@ -43,6 +43,7 @@ const DashboardPage = ({
       selectedBuoy={selectedBuoy}
       data={data}
       error={error}
+      onNavigate={onNavigate}
     />
   </div>
 );

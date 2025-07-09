@@ -1,10 +1,28 @@
 import React from 'react';
 
-const HistoricalDataPanel = ({ selectedBuoy, data, error }) => {
+const HistoricalDataPanel = ({ selectedBuoy, data, error, onNavigate }) => {
+  const handleHelpClick = () => {
+    onNavigate('about');
+    //delay before auto scroll
+    setTimeout(() => {
+      const metricsSection = document.getElementById('data-metrics-section');
+      if (metricsSection) {
+        metricsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
   return (
     <div className="panel historical-panel">
       <div className="panel-header">
         <h2 className="panel-title">Historical Wave Data</h2>
+        <div 
+          className="help-icon"
+          title="What do these data metrics mean?"
+          onClick={handleHelpClick}
+        >
+          ?
+        </div>
       </div>
       <div className="data-table">
         <table>

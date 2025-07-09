@@ -53,7 +53,7 @@ const AboutPage = ({ onNavigate }) => (
         </div>
       </div>
 
-      <div className="settings-section">
+      <div className="settings-section" id="data-metrics-section">
         <h3>Data Metric Meanings</h3>
         <div className="setting-item">
           <div>
