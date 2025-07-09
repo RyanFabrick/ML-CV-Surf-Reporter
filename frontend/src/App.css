@@ -283,7 +283,7 @@ body {
     gap: 2rem;
 }
 
-/* Panel Base Styles */
+/* Ensure panels don't clip tooltips */
 .panel {
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
@@ -291,6 +291,8 @@ body {
     padding: 2rem;
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: visible; /* Add this to prevent clipping */
 }
 
 .panel:hover {
@@ -298,11 +300,14 @@ body {
     box-shadow: 0 8px 32px var(--shadow-accent);
 }
 
+/* Ensure panel headers don't clip tooltips */
 .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    position: relative;
+    overflow: visible; /* Add this to prevent clipping */
 }
 
 .panel-title {
@@ -1004,6 +1009,8 @@ body {
     transition: all 0.3s ease;
     user-select: none;
     position: relative;
+    /* Add this to ensure tooltip can extend beyond container */
+    z-index: 9999;
 }
 
 .help-icon:hover {
@@ -1011,19 +1018,22 @@ body {
     color: #ffffff;
     transform: scale(1.1);
     box-shadow: 0 2px 8px var(--shadow-accent);
+    /* Increase z-index on hover */
+    z-index: 10000;
 }
 
 .help-icon:active {
     transform: scale(0.95);
 }
 
-/* Tooltip styling (optional enhancement) */
+/* Tooltip styling with improved positioning */
 .help-icon::after {
     content: attr(title);
-    position: absolute;
-    bottom: 100%;
+    position: fixed; /* Changed from absolute to fixed */
+    bottom: auto;
+    top: auto;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(-100%);
     background: var(--bg-secondary);
     color: var(--text-primary);
     padding: 0.5rem;
@@ -1034,14 +1044,23 @@ body {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    z-index: 9999;
+    z-index: 10001; /* Higher than help icon */
     border: 1px solid var(--border-color);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     margin-bottom: 5px;
+    /* Position relative to the icon */
+    top: calc(100% + 5px);
 }
 
 .help-icon:hover::after {
     opacity: 1;
+}
+
+/* Alternative approach - position tooltip to the left if right side is blocked */
+.panel-header .help-icon::after {
+    left: auto;
+    right: 0;
+    transform: translateX(0) translateY(-100%);
 }
 
 /* Responsive adjustments */
@@ -1055,5 +1074,10 @@ body {
     .help-icon::after {
         font-size: 0.7rem;
         padding: 0.4rem;
+        /* Adjust positioning for mobile */
+        position: absolute;
+        left: auto;
+        right: 0;
+        transform: translateX(0) translateY(-100%);
     }
 }
