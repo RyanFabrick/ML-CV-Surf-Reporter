@@ -11,16 +11,19 @@ const AboutPage = ({ onNavigate }) => (
     <div className="page-content">
       <h2>About This Website</h2>
       <p>
-        Write stuff here
+      This is a surf reporting application that gives real-time data based on:
+      <br />
+      • Live buoy data from real buoys in respective locations
+      <br />
+      • Computer vision and machine learning model that detects surfers in live surf cameras
       </p>
-      
       <div className="settings-section">
-        <h3>Computer Vision Works</h3>
+        <h3>How the Real-Time Surfer Detection Works</h3>
         <div className="setting-item">
           <div>
-            <div className="setting-label">Real-time Surfer Detection</div>
+            <div className="setting-label">Live Surf Camera to Surf Reporter Pipeline</div>
             <p className="setting-description">
-              write stuff here
+              The complete data pipeline begins with the live surf camera stream via HLS. HLS is ingested by FFmpeg and serves the converted MJPEG stream via a local HTTP endpoint. MJPEG stream becomes the input source for inference, with each camera running in a respective thread for parallel processing. Robotflow's InferencePipeline is initialized, pulling frames from the MJPEG stream. Frame-by-frame inference occurs when sent to Roboflow’s hosted object detection model. Surfer count is recorded and counted from the predictions and updated to a global dictionary. Flask serves a route that reads from the global dictionary and returns the response in JSON format. The frontend fetches and queries this in a specified time interval. The response data is passed into the React state and displayed. Users see a real-time surfer count on the main page. 
             </p>
           </div>
         </div>
@@ -28,7 +31,11 @@ const AboutPage = ({ onNavigate }) => (
           <div>
             <div className="setting-label">Computer Vision & Machine Learning Elements</div>
             <p className="setting-description">
-              write stuff here
+              This application leverages Roboflow as the foundation for computer vision and machine learning functionality, focused on detecting surfers in real-time from surf camera footage. I. Ryan Fabrick, built a custom-trained object detection model using Roboflow's 3.0 Object Detection (Fast) framework. It is designed to detect surfers within video frames, outputting bounding boxes around detected surfers, confidence scores, and class labels.
+              <br /><br />
+              The model yields a mean average precision at 0.5 lou (mAP@50) of 65.4%, which measures the overlap between predicted and ground-truth boxes. It yields a precision of 69.3%, meaning 6.93 out of 10 predictions are correct. It yields a recall of 63.9%, indicating it successfully detects nearly two-thirds of all actual surfers in a frame.
+              <br /><br />
+              For real-time deployment, this application uses Roboflow's InferencePipeline class to connect the model to live MJPEG video streams. This pipeline handles video frame extraction and automatically invokes the object detection model at a specified frame rate. A custom callback function is used to parse predictions returned as structured data. This counts the number of surfers per frame and pushes the result to be accessible to the rest of the application.
             </p>
           </div>
         </div>
@@ -36,11 +43,15 @@ const AboutPage = ({ onNavigate }) => (
           <div>
             <div className="setting-label">Stream Processing</div>
             <p className="setting-description">
-              write stuff here
+              The stream processing component of this application converts raw, public surf camera feeds into a format suitable for frame-by-frame analysis by the machine learning model. Surf cams are used to provide video streams via HTTP Live Streaming (HLS), which provides video in segmented .m3u8 playlist files. Each .m3u8 file lists a sequence of short MPEG video chunks that update in near real-time. 
+              <br /><br />
+              This application uses FFmpeg, a multimedia tool, to convert HLS streams into Motion JPEG (MJPEG) format. To achieve this, a subprocess is launched that reads the HLS stream and transcodes it into a new stream served over HTTP locally. Conditions such as frame rates and resolution standardization are passed during this. The output stream is hosted via a local server on a unique port, which serves a continuous MJPEG feed suitable for CV ingestion. 
+              <br /><br />
+              Each surf camera used is processed in a dedicated thread, allowing the system to handle multiple streams concurrently. Each thread monitors the health of its respective FFMpeg process and can restart if the process fails. MJPEF streams simplify downstream processing which makes it easier to extract, analyze, and discard frames in real-time. This enables fast and reliable frame delivery to the Roboflow inference engine. 
             </p>
           </div>
         </div>
-        <div className="setting-item">
+        <div className="setting-item" id="CV-annotated-example">
           <div>
             <div className="setting-label">Computer Vision & Machine Learning Model in Action</div>
             <p className="setting-description">
@@ -118,20 +129,30 @@ const AboutPage = ({ onNavigate }) => (
       </div>
 
       <div className="settings-section">
-        <h3>Data Sources</h3>
+        <h3>Data Sources & Credits</h3>
         <div className="setting-item">
           <div>
-            <div className="setting-label">write stuff here ocean data</div>
+            <div className="setting-label">Buoys</div>
             <p className="setting-description">
-              write stuff here
+              <a href="https://cdip.ucsd.edu/" target="_blank" rel="noopener noreferrer" style={{color: '#E0B0FF'}}>Coastal Data Information Program (CDIP)</a>
             </p>
           </div>
         </div>
         <div className="setting-item">
           <div>
-            <div className="setting-label">write stuff here surfcam data</div>
+            <div className="setting-label">Surf Cameras</div>
             <p className="setting-description">
-              write stuff here
+              <a href="https://thesurfersview.com/" target="_blank" rel="noopener noreferrer" style={{color: '#E0B0FF'}}>The Surfers View</a>
+            </p>
+          </div>
+        </div>
+        <div className="setting-item">
+          <div>
+            <div className="setting-label">Other</div>
+            <p className="setting-description">
+              <a href="https://roboflow.com/" target="_blank" rel="noopener noreferrer" style={{color: '#E0B0FF'}}>Roboflow</a>
+              <br />
+              <a href="https://ffmpeg.org/" target="_blank" rel="noopener noreferrer" style={{color: '#E0B0FF'}}>FFmpeg</a>
             </p>
           </div>
         </div>

@@ -4,10 +4,11 @@ const VideoPanel = ({ selectedWebcam, videoData, webcamError, analysisStatus, on
   const handleHelpClick = () => {
     onNavigate('about');
     //scrolls to CV section after delay
+
     setTimeout(() => {
-      const cvSection = document.querySelector('.settings-section h3');
-      if (cvSection && cvSection.textContent === 'Computer Vision Works') {
-        cvSection.scrollIntoView({ behavior: 'smooth' });
+      const metricsSection = document.getElementById('CV-annotated-example');
+      if (metricsSection) {
+        metricsSection.scrollIntoView({ behavior: 'smooth' });
       }
     }, 100);
   };
