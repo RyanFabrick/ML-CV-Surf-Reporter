@@ -20,23 +20,18 @@ const ChartPanel = ({ selectedBuoy, data, error }) => {
         ) : !data ? (
           <div className="loading">Loading chart data...</div>
         ) : (
-          /* ResponsiveContainer makes the chart resize with the window */
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
-              {/* CartesianGrid adds the background grid lines */}
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
-              {/* XAxis shows the time labels at bottom */}
               <XAxis 
                 dataKey="time" 
                 stroke="#a0a0a0"
                 fontSize={12}
               />
-              {/* YAxis shows the wave height values on left */}
               <YAxis 
                 stroke="#a0a0a0"
                 fontSize={12}
               />
-              {/* Tooltip shows details when you hover over points */}
               <Tooltip 
                 contentStyle={{
                   backgroundColor: '#1a1a1a',
@@ -45,15 +40,13 @@ const ChartPanel = ({ selectedBuoy, data, error }) => {
                   color: '#ffffff'
                 }}
               />
-              {/* Legend explains what the lines represent */}
               <Legend />
-              {/* The actual line that shows wave height data */}
               <Line 
-                type="monotone"           // Smooth curved line
-                dataKey="waveHeight"     // Which data to plot (from chartData)
-                stroke="#00d4ff"         // Line color (your blue theme)
-                strokeWidth={2}          // Line thickness
-                name="Wave Height (m)"   // Label in legend and tooltip
+                type="monotone"           //smooth curved line
+                dataKey="waveHeight"     //which data to plot
+                stroke="#00d4ff"         //line color
+                strokeWidth={2}          //line thickness
+                name="Wave Height (m)"   //label in legend and tooltip
                 dot={{ fill: '#00d4ff', strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, fill: '#00d4ff' }}
               />

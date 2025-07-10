@@ -28,7 +28,7 @@ export const useVideoData = (selectedWebcam) => {
           setWebcamError(null);
           setAnalysisStatus(json.status);
 
-          //Show status messages
+          //show status messages
           if (json.status === 'starting') {
             setAnalysisStatus('Starting Analysis...');
           } else if (json.status === 'initializing') {

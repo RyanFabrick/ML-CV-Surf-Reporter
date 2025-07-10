@@ -4,7 +4,6 @@ import WaveDataPanel from './Wave_Data_Panel';
 import ChartPanel from './Chart_Panel';
 import HistoricalDataPanel from './Historical_Data_Panel';
 
-// Main Dashboard Component
 const DashboardPage = ({ 
   selectedBuoy, 
   selectedWebcam, 
@@ -16,7 +15,7 @@ const DashboardPage = ({
   onNavigate
 }) => (
   <div className="dashboard">
-    {/* Video Analysis Panel */}
+
     <VideoPanel 
       selectedWebcam={selectedWebcam}
       videoData={videoData}
@@ -25,20 +24,17 @@ const DashboardPage = ({
       onNavigate={onNavigate}
     />
 
-    {/* Current Wave Data Panel */}
     <WaveDataPanel 
       selectedBuoy={selectedBuoy}
       data={data}
     />
 
-    {/* Chart Panel */}
     <ChartPanel 
       selectedBuoy={selectedBuoy}
       data={data}
       error={error}
     />
 
-    {/* Historical Data Panel */}
     <HistoricalDataPanel 
       selectedBuoy={selectedBuoy}
       data={data}
@@ -46,6 +42,7 @@ const DashboardPage = ({
       onNavigate={onNavigate}
     />
   </div>
+  
 );
 
 export default DashboardPage;

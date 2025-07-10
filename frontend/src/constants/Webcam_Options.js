@@ -1,4 +1,4 @@
-//webcam options (tentative update, currently malibu only)
+//webcam options
 export const webcamOptions = [
   {
     id: 'Windansea', 

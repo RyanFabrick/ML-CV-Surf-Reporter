@@ -3,16 +3,16 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-// Import components
+//import components
 import DashboardPage from './components/Dashboard_Page';
 import SettingsPage from './components/Settings_Page';
 import AboutPage from './components/About_Page';
 
-// Import constants
+//import constants
 import { buoyOptions } from './constants/Buoy_Options';
 import { webcamOptions } from './constants/Webcam_Options';
 
-// Import custom hooks
+//import custom hooks
 import { useWaveData } from './hooks/useWaveData';
 import { useVideoData } from './hooks/useVideoData';
 
@@ -50,7 +50,7 @@ function App() {
     localStorage.setItem('surf-analytics-font-size', fontSize.toString());
   }, [fontSize]);
 
-  // Use custom hooks for data fetching
+  //use custom hooks for data fetching
   const { data, error, fetchWaveData } = useWaveData(selectedBuoy);
   const { videoData, webcamError, analysisStatus, fetchVideoData } = useVideoData(selectedWebcam);
   
@@ -66,11 +66,11 @@ function App() {
     console.log(`Selected Buoy: ${newBuoyId}`);
   };
 
-  // handles webcam selection changes
+  //handles webcam selection changes
   const handleWebcamChange = (event) => {
     const newWebcamId = event.target.value;
 
-    //Stops previous analysis if switching webcams
+    //stops previous analysis if switching webcams
     if (selectedWebcam && selectedWebcam !== newWebcamId) {
       fetch(`http://localhost:5000/api/stop-analysis/${selectedWebcam}`)
         .catch(err => console.log('Error Stopping Previous Analysis:', err));
@@ -91,7 +91,7 @@ function App() {
     setFontSize(newFontSize);
   };
 
-  // Render different pages based on current page state
+  //render different pages based on current page state
   const renderPage = () => {
     switch (currentPage) {
       case 'settings':
@@ -128,14 +128,12 @@ function App() {
   //if valid data, loops through timestamps and metrics displayed
   return (
     <div className="app">
-      {/* Top Navigation */}
       <nav className="top-nav">
         <div className="nav-container">
           <div className="logo" onClick={() => handleNavigation('dashboard')}>
             Surf Reporter
           </div>
           
-          {/* New Navigation Menu */}
           <div className="nav-menu">
             <button 
               className={`nav-button ${currentPage === 'dashboard' ? 'active' : ''}`}

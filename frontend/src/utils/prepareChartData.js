@@ -1,4 +1,4 @@
-//Prepares data for Recharts
+//prepares data for Recharts
 //transforms raw API data into readable Recharts data
 export function prepareChartData(apiData) {
   //creates array of chart points - combines time and wave measurements

@@ -173,7 +173,6 @@ const AboutPage = ({ onNavigate }) => (
     </div>
   </div>
 
-
 );
 
 export default AboutPage;

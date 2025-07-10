@@ -1,6 +1,5 @@
 import React from 'react';
 
-//setting page
 const SettingsPage = ({ onNavigate, theme, onThemeChange, fontSize, onFontSizeChange }) => (
   <div className='page-container'>
     <div className="page-header">

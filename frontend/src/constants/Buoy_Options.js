@@ -1,4 +1,4 @@
-//currently mock buoy data - (tentative update)
+//buoy options from CDIP
 export const buoyOptions = [
   { id: '273', name: 'King-Poloa, AS', location: 'Samoan Islands' },
   { id: '157', name: 'Point Sur, CA', location: 'California' },
