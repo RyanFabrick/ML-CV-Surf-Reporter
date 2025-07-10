@@ -1,4 +1,4 @@
-//utility function to get current wave data from latest measurements
+//function to get current wave data from latest measurements
 export const getCurrentWaveData = (data) => {
   if (!data || !data.waveHs || data.waveHs.length === 0) {
     return {
