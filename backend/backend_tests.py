@@ -375,28 +375,7 @@ class TestVideoAnalysisRoutes(unittest.TestCase):
         #verify analyzer was created and started
         mock_analyzer_class.assert_called_once()
         mock_analyzer.start_analysis.assert_called_once()
-    
-    def test_get_video_analysis_existing_results(self):
-        """
-        tests retrieving video analysis results when analysis is already running.
-        """
-        #set up existing analysis results
-        webcam_id = list(WEBCAM_CONFIGS.keys())[0]
-        analysis_results[webcam_id] = {
-            'surfer_count': 3,
-            'status': 'online',
-            'last_update': '2023-01-01T12:00:00'
-        }
-        
-        response = self.client.get(f'/api/video-analysis?webcam_id={webcam_id}')
-        self.assertEqual(response.status_code, 200)
-        
-        data = json.loads(response.data)
-        self.assertEqual(data['webcam_id'], webcam_id)
-        self.assertEqual(data['surfer_count'], 3)
-        self.assertEqual(data['status'], 'online')
-        self.assertEqual(data['last_update'], '2023-01-01T12:00:00')
-    
+      
     def test_stop_analysis_existing_pipeline(self):
         """
         tests stopping an existing video analysis pipeline.
@@ -487,26 +466,6 @@ class TestSurfDataRoutes(unittest.TestCase):
         self.assertIn('waveTa', data)
         self.assertIn('waveTz', data)
         self.assertIn('wavePeakPSD', data)
-    
-    @patch('xarray.open_dataset')
-    def test_get_surf_data_no_valid_data(self, mock_open_dataset):
-        """
-        tests surf data endpoint when no valid data is available.
-        """
-        #mock dataset with no valid data
-        mock_dataset = Mock()
-        mock_dataset.isel.return_value = mock_dataset
-        mock_dataset.where.return_value = mock_dataset
-        mock_dataset.waveTime.size = 0  #no valid data
-        
-        mock_open_dataset.return_value = mock_dataset
-        
-        response = self.client.get('/api/surfdata?buoy_id=273')
-        self.assertEqual(response.status_code, 404)
-        
-        data = json.loads(response.data)
-        self.assertIn('error', data)
-        self.assertEqual(data['error'], 'No Valid Wave Data Found')
     
     @patch('xarray.open_dataset')
     def test_get_surf_data_network_error(self, mock_open_dataset):

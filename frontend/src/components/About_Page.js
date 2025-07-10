@@ -165,7 +165,7 @@ const AboutPage = ({ onNavigate }) => (
           <div>
             <div className="setting-label">GitHub Repository Link</div>
             <p className="setting-description">
-              repo link here
+              <a href="https://github.com/RyanFabrick/ML-CV-Surf-Forecast" target="_blank" rel="noopener noreferrer" style={{color: '#E0B0FF'}}>GitHub Repository</a>
             </p>
           </div>
         </div>
