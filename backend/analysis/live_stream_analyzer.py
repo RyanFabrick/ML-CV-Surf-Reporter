@@ -1,17 +1,30 @@
-import threading
-import time
-import subprocess
-import traceback
-from datetime import datetime
-from inference import InferencePipeline
-from config import Config
+import threading #enables concurrent execution for running multiple streams simultaneously
+import time #time related functions (delays, etc)
+import subprocess #enables spawning of new processes (for FFmpeg vid conversion)
+import traceback #for debugging - detailed error info
+from datetime import datetime #timestamping analysis results
+from inference import InferencePipeline #roboflow's inference pipeline for object detection
+from config import Config #configuration settings (API keys, ports, etc)
 
 class LiveStreamAnalyzer:
+    """
+    main class responsible for analyzing live vid streams to detect surfers
+    ffmpeg process -> convers HLS to MJPEG
+    #roboflow pipeline -> inference to detect surfers
+    #results management -> stores and updates detection results
+    """
     def __init__(self, webcam_id, hls_url):
-        self.webcam_id = webcam_id
-        self.hls_url = hls_url
-        self.ffmpeg_process = None
-        self.pipeline = None
+        """
+        initlaizes live stream analyzer for specific webcam (surfcam)
+        webcam_id -> unique identifier for webcam
+        hls_url -> HLS url from webcam source
+        sets up stream conversion params, por allocation for local MJPEG stream, inital result state
+        """
+        self.webcam_id = webcam_id #unique id for webcam instance
+        self.hls_url = hls_url #source webcam HLS url
+        self.ffmpeg_process = None #will hold ffmpeg subprocess
+        self.pipeline = None #will hold roboflow inference pipeline
+        #unique port for webcam's local mjpeg stream
         self.port_number = Config.BASE_PORT + int(webcam_id) if webcam_id.isdigit() else Config.BASE_PORT + 1
         self.stream_url = f"http://localhost:{self.port_number}/stream.mjpeg"
         self.latest_result = {
@@ -20,12 +33,18 @@ class LiveStreamAnalyzer:
             'last_update': None
         }
     
+    #
     def roboflow_sink(self, result, video_frame):
-        #processes results from CV inference (roboflow)
+        """
+        callback function processes results from roboflow inference
+        result -> inference result containing detection data
+        video_frame -> actual vid frame
+        handles tuples, dicts
+        """
         try:
             #intializes surfer count
             surfer_count = 0
-            #debugging - type of data received
+            #debugging - data structure received
             print(f"Result type: {type(result)}")
             
             data = result
@@ -88,15 +107,20 @@ class LiveStreamAnalyzer:
             self.latest_result['status'] = 'error'
 
     def check_ffmpeg_process(self):
+        """
+        monitors FFmpeg process health, restarts if necessary
+        called by health check thread
+        """
+        #checks if ffmpeg process has terminated poll() returns none if running
         if self.ffmpeg_process and self.ffmpeg_process.poll() is not None:
             print("FFmpeg process died, restarting...")
             try:
-                # Clean up old process
+                #clean up old process
                 if self.ffmpeg_process:
                     self.ffmpeg_process.terminate()
                     self.ffmpeg_process.wait(timeout=5)
                 
-                # Restart
+                #restarts ffmpeg
                 if not self.start_ffmpeg_conversion():
                     print("Failed to restart FFmpeg")
                     self.latest_result['status'] = 'ffmpeg_error'
@@ -109,28 +133,35 @@ class LiveStreamAnalyzer:
                 self.latest_result['status'] = 'error'
 
     def start_ffmpeg_conversion(self):
+        """
+        starts ffmpeg process to conver HLS stream to mjpeg
+        returns bool: true if ffmpef started successfuly
+        returns bool: false otherwise
+        """
+        #command configurations
         ffmpeg_commands = [
             'ffmpeg',
-            '-re',  # Read input at native frame rate
-            '-i', self.hls_url,
-            '-f', 'mjpeg',
-            '-r', str(Config.MAX_FPS),
-            '-s', Config.FFMPEG_RESOLUTION,
-            '-q:v', str(Config.FFMPEG_QUALITY),  # Quality level (2-31, lower is better)
-            '-listen', '1',
-            '-timeout', str(Config.FFMPEG_TIMEOUT),  # Timeout after 10 seconds of no connection
-            '-analyzeduration', '1000000',  # Faster stream analysis
-            '-probesize', '1000000',
-            '-y',
-            self.stream_url
+            '-re',  #read input at native frame rate
+            '-i', self.hls_url, #input
+            '-f', 'mjpeg', #output
+            '-r', str(Config.MAX_FPS), #frame rate limit
+            '-s', Config.FFMPEG_RESOLUTION, #vid res
+            '-q:v', str(Config.FFMPEG_QUALITY),  #quality level (2-31, lower is better)
+            '-listen', '1', #enables http server mode
+            '-timeout', str(Config.FFMPEG_TIMEOUT),  #timeout after 10 seconds of no connection
+            '-analyzeduration', '1000000',  #faster stream analysis
+            '-probesize', '1000000', #limits probe size, faster startup
+            '-y', #overwrite output
+            self.stream_url #output: local mjpeg stream url
         ]
         
         try:
             print(f"Starting FFmpeg Conversion for {self.webcam_id} on {self.stream_url}")
+            #starts ffmpeg as subprocess with output suppressed
             self.ffmpeg_process = subprocess.Popen(
                 ffmpeg_commands,
-                stderr=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL
+                stderr=subprocess.DEVNULL, #suppress error output
+                stdout=subprocess.DEVNULL  #supress standard output
             )
             return True
         except Exception as e:
@@ -138,9 +169,14 @@ class LiveStreamAnalyzer:
             return False
     
     def start_roboflow_pipeline(self):
-        #starts Roboflow inference pipeline
+        """
+        initialzies and starts roboflow inference pipeline
+        returns bool: true if pipeline started successfuly
+        returns bool: false otherwise
+        """
         try:
             print(f"Connecting to stream: {self.stream_url}")
+            #intilaizes roboflow pipeline w/ configurations
             self.pipeline = InferencePipeline.init_with_workflow(
                 api_key=Config.ROBOFLOW_API_KEY,
                 workspace_name=Config.ROBOFLOW_WORKSPACE,
@@ -155,53 +191,92 @@ class LiveStreamAnalyzer:
             print("Starting Roboflow Pipeline for {self.webcam_id}...")
             self.pipeline.start()
             return True
+        
         except Exception as e:
             print(f"Error Starting Roboflow Pipeline: for {self.webcam_id}: {e}")
             return False
         
     def start_analysis(self):
+        """
+        main method to start complete analysis pipeline
+        starts ffmpeg for stream conversion
+        launches health monitoring
+        starts roboflow processing
+        handles errors
+        runs in separate thread
+        returns threading.Thread: The thread running the analysis pipeline
+        """
         print(f"Starting analysis for webcam: {self.webcam_id}")
         print(f"HLS URL: {self.hls_url}")
 
         def run_pipeline():
+            """
+            internal function runs the complete pipeline
+            in a separate thread to prevent blocking
+            """
             try:
+                #step 1 - starts conversion
                 if not self.start_ffmpeg_conversion():
                     self.latest_result['status'] = 'ffmpeg_error'
                     return
                 
-                # Start health check thread
+                #step 2 - starts health monitoring
                 health_thread = threading.Thread(target=self.health_check, daemon=True)
                 health_thread.start()
 
+                #step 3 - starts roboflow process
                 if not self.start_roboflow_pipeline():
                     self.latest_result['status'] = 'roboflow_error'
                     return
                 
+                #step 4 - keeps pipeline running
                 self.pipeline.join()
                 
             except Exception as e:
                 print(f"Pipeline Error for {self.webcam_id}: {e}")
                 self.latest_result['status'] = 'error'
 
+        #starts piepline in daemon thread
+        #daemon threads auto exit when main progmram exits
         thread = threading.Thread(target=run_pipeline, daemon=True)
         thread.start()
         return thread
 
     def health_check(self):
-        """Continuously check FFmpeg and restart if needed"""
+        """
+        continuously check FFmpeg and restart if needed
+        runs in background thread
+        checks ffmpeg process health
+        monitors roboflow pipeline status
+        auto restarts failed parts
+        prevents hanging on failures
+        runs indef until thread is terminated
+        """
         while True:
-            time.sleep(Config.HEALTH_CHECK_INTERVAL)  # Check every 5 seconds
+            #check every 5 seconds
+            time.sleep(Config.HEALTH_CHECK_INTERVAL)
             self.check_ffmpeg_process()
             
-            # Also check if Roboflow is still connected
+            #check if Roboflow is still connected
             if self.pipeline and not self.pipeline.is_running():
                 print("Roboflow pipeline stopped, attempting to restart...")
                 self.start_roboflow_pipeline()
     
     def stop_analysis(self):
-        #stops analysis pipeline
+        """
+        clean shutfown of analysis pipeline
+        terminates roboflow pipeline
+        stops ffmpeg process
+        cleans system reosurces
+        prevents resource leaks
+        called when stopping analysis for webcam or applciation shutdown
+        """
+
+        #stops roboflow inference pipeline
         if self.pipeline:
             self.pipeline.terminate()
+        
+        #stops ffmpeg conversion rpocess
         if self.ffmpeg_process:
             self.ffmpeg_process.terminate()
             self.ffmpeg_process.wait()

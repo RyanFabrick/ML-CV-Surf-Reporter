@@ -1,61 +1,63 @@
-import xarray as xr
-import pandas as pd
+import xarray as xr #for multi dimesional arrays, helpful for NetCDF files
+import pandas as pd #data manipulation/analysis (needed for datetime conversion format)
 from flask import Blueprint, jsonify, request
 
 surf_data_bp = Blueprint('surf_data', __name__)
 
-#Exisitng surfdata route accepts bupy_id parameter
 @surf_data_bp.route('/api/surfdata')
+
 def get_surf_data():
-    
-    #gets buoy_id from query parameters, default - 237(point dume)
+    """
+    api endpoint to retrieve wave data from CDIP buoys
+    accepts buoy_id param for query
+    connects to CDIP THREDDS server to access NetCDF
+    fileters for 'good' data points
+    extracts paramters wanted
+    formats timestamps for frontend display
+
+    returns JSON data for frontend retreival
+    returns wave height, peak wave peirod, wave direction, average wave period
+    mean zero upcrossing period, and peak power spectral density
+    """
+    #gets buoy_id from query parameters, default - 237
     buoy_id = request.args.get('buoy_id', '273')
     
     try:    
-        # Step 1: ppoint to public netCDF file for data 
-        # (Point Dume Bouy - 273)
+        #url for cdip real-time data
+        #gives oPeNDAP access to netcdf files
         url = f'https://thredds.cdip.ucsd.edu/thredds/dodsC/cdip/realtime/{buoy_id}p1_rt.nc'
 
-        # checks connectivity to CDIP server
-        #try:
-        #    urllib.request.urlopen(url, timeout=30)
-        #except Exception as e:
-        #    return jsonify({'error': 'CDIP Server Unreachable', 'Details': str(e)}), 504
-
-        # loads .nc file directly
-        #ds = xr.open_dataset('273p1_rt.nc')
-
-        # opens dataset remotely
+        #opens dataset remotely vis opendap
+        #xarray handles network connection, data parsing
         ds = xr.open_dataset(url)
 
         ds = ds.isel(waveTime=slice(-30, None))
 
-        # Step 2: filter for "good" records
-        # CDIP documentation reccomenndation
-        # keeps only "good" records
+        #CDIP documentation reccomenndation
+        #keeps only "good" records
+        # 1 - good, 2 - not evaluated, 3 - questionable, 4 - bad
         good = ds['waveFlagPrimary'] == 1
+        #removes flagged data and checks
         ds = ds.where(good, drop=True)
         if ds.waveTime.size == 0:
             return jsonify({'error': 'No Valid Wave Data Found'}), 404
-
-        # Step 3: Extract relevant data
-        # Relevant data: time, 
-        # wave height significant (waveHs),
-        # peak wave period (waveTp),
-        # peak wave direction (waveDp),
-        # avg wave period (waveTa),
-        # mean zero-upcrossing period (waveTz),
-        # peak wave power spectral density (wavePeakPSD)
+        
+        #timestamps
         times = ds['waveTime'].values[:10]
+        # wave height significant (waveHs),
         wave_height_significant = ds['waveHs'].values[:10]
+        # peak wave period (waveTp),
         wave_tp = ds['waveTp'].values[:10]
+        # peak wave direction (waveDp)
         wave_dp = ds['waveDp'].values[:10]
+        # avg wave period (waveTa),
         wave_ta = ds['waveTa'].values[:10]
+        # mean zero-upcrossing period (waveTz),
         wave_tz = ds['waveTz'].values[:10]
+        # peak wave power spectral density (wavePeakPSD)
         wave_psd = ds['wavePeakPSD'].values[:10]
 
-        # Step 4: convert UNIX to readable format
-        #converts numpy.datetime64 to Python datetime/format, each
+        #numpy.datetime64 to readable
         readable_time = []
         for t in times:
             #converts to pandas.Timestamp
@@ -65,7 +67,8 @@ def get_surf_data():
             #appends to list
             readable_time.append(formatted)
 
-        # Step 5: returns data to frontend as JSON
+        #returns structured JSON
+        #numpy arrays converted to lists
         return jsonify({
 
             'time': readable_time,
