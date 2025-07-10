@@ -1,4 +1,6 @@
-import urllib.request
+import urllib.request #for http request to proxy mjpeg vid streams
+                        #for backend to fetch from local ffmpeg streams
+                        #serves to frontend w/o direct access
 import traceback
 from flask import Blueprint, jsonify, request, Response
 from analysis.live_stream_analyzer import LiveStreamAnalyzer
@@ -6,14 +8,19 @@ from webcam_configs import WEBCAM_CONFIGS
 
 video_analysis_bp = Blueprint('video_analysis', __name__)
 
-#global vars store analysis results
-analysis_results = {}
-active_pipelines = {}
+#global dicts data between http requests
+analysis_results = {} #latest detection results
+active_pipelines = {} #maintains references to active LiveStreamAnalyzer instances
 
 @video_analysis_bp.route('/api/video-analysis')
 def get_video_analysis():
-    #gets webcam_id from query parameters
+    """
+    main api endpoint for retreiving vid analysis data
+    and managing analysis pipelines
 
+    returns JSON with webcam info, surfer count, status, timestamp
+    error response for invalid request or system fails
+    """
     try:
         webcam_id = request.args.get('webcam_id')
         print(f"Received webcam_id: {webcam_id}")
@@ -68,7 +75,14 @@ def get_video_analysis():
 
 @video_analysis_bp.route('/api/stop-analysis/<webcam_id>')
 def stop_analysis(webcam_id):
-    #Stops analysis for SPECIFIC webcam_id
+    """
+    api endpoint to stop vid analysis for specifci webcam 
+    webcam_id -> URL paramrter for specific webcam
+    returns success if pipeline stopped succesffuly
+    returns error if no active piepline found
+    """
+
+    #checks if active pipeline exists
     if webcam_id in active_pipelines:
         active_pipelines[webcam_id].stop_analysis()
         del active_pipelines[webcam_id]
@@ -79,14 +93,23 @@ def stop_analysis(webcam_id):
 
 @video_analysis_bp.route('/video_feed/<webcam_id>')
 def video_feed(webcam_id):
+    """
+    vid streaming enpoint that proxies mjpeg streams to frontend
+    webcam_id -> URL paramrter for specific webcam
+    returns streaming response with mjpeg vid data
+    returns error for inactive webcams, stream failures
+    """
+
+    #verifies analysis pipeline is active for webcam
     if webcam_id not in active_pipelines:
         return "Webcam not active", 404
     
     try:
-        # This is a simple proxy to the MJPEG stream
+        #simple proxy to the MJPEG stream
         stream_url = active_pipelines[webcam_id].stream_url
         resp = urllib.request.urlopen(stream_url)
         return Response(resp.read(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    
     except Exception as e:
         print(f"Video feed error: {e}")
         return "Stream unavailable", 503

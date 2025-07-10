@@ -1,4 +1,4 @@
-#webcam configurations (modified later)
+#webcam configurations
 WEBCAM_CONFIGS = {
     'Windansea': {
         'name': 'Windansea - La Jolla',
