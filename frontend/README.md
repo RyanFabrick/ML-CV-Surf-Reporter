@@ -46,6 +46,14 @@ Surf Reporter's frontend is a cleanly designed web application that combines rea
 
 ![dashboard_lightmode_gif](https://github.com/user-attachments/assets/9ca271be-11ce-4959-805b-11a38939e0ec)
 
+**Settings**
+
+![settings_gif](https://github.com/user-attachments/assets/b5793bc5-7e51-40b9-bf5b-301546ff2099)
+
+**About**
+
+![about_gif](https://github.com/user-attachments/assets/9aa257a8-5b81-4e2d-8eca-560da06927f6)
+
 ### User Experience
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - **Accessibility**: Scalable font sizes (80% - 150%) for improved readability
