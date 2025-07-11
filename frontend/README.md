@@ -37,6 +37,8 @@ Surf Reporter's frontend is a cleanly designed web application that combines rea
 - **Live Stream Processing**: Integration with live surf camera feeds via HLS (HTTP Live Streaming) to MJPEG (Motion JPEG) conversion
 - **Surfer Count Display**: Live count of surfers in the water at user selected surf cameras
 - **Stream Status Monitoring**: Real-time connection and analysis status indicators
+- **Model in Action!** 
+![example_video_gif](https://github.com/user-attachments/assets/e63b18d6-1ee1-4930-9ba6-fa2241235121)
 
 ## UI Preview
 
