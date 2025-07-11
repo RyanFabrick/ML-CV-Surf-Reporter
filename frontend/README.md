@@ -1,6 +1,23 @@
 # Surf Reporter Frontend
 
 A modern, sleek, responsive React application that provides users with real-time surf and wave conditions as well as real-time surfer detection through live surf cameras.
+## Table of Contents
+- [Overview](#overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [API Integration](#api-integration)
+- [Theme & Customization](#theme--customization)
+- [Components Architecture](#components-architecture)
+- [Custom Hooks](#custom-hooks)
+- [Browser Support](#browser-support)
+- [Security Considerations](#security-considerations)
+- [Performance Optimizations](#performance-optimizations)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
+- [Acknowledgments](#acknowledgments)
 
 ## Overview
 
