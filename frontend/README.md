@@ -4,6 +4,7 @@ A modern, sleek, responsive React application that provides users with real-time
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
+- [UI Preview](#ui-preview)
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
@@ -36,6 +37,21 @@ Surf Reporter's frontend is a cleanly designed web application that combines rea
 - **Live Stream Processing**: Integration with live surf camera feeds via HLS (HTTP Live Streaming) to MJPEG (Motion JPEG) conversion
 - **Surfer Count Display**: Live count of surfers in the water at user selected surf cameras
 - **Stream Status Monitoring**: Real-time connection and analysis status indicators
+
+## UI Preview
+
+**Dashboard**
+
+<p float="left">
+  <figure>
+    <img src="./public/videos/dashboard_darkmode_gif.gif" width="49%" />
+    <figcaption align="center">Dark Mode</figcaption>
+  </figure>
+  <figure>
+    <img src="./public/videos/dashboard_lightmode_gif.gif" width="49%" />
+    <figcaption align="center">Light Mode</figcaption>
+  </figure>
+</p>
 
 ### User Experience
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
