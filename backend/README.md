@@ -8,7 +8,7 @@ A real-time computer vision system designed and trained for automated surfer det
 - [Main Page Real-Time Surfer Detection](#real-time-surfer-detection-on-main-page)
 - [System Architecture](#system-architecture)
 - [Technology Stack](#technology-stack)
-- [Computer Vision & Machine Learning Model in Action](custom-trained-computer-vision-&-machine-learning-model-in-action)
+- [Computer Vision & Machine Learning Model in Action](#custom-trained-computer-vision--machine-learning-model-in-action)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [API Documentation](#api-documentation)
