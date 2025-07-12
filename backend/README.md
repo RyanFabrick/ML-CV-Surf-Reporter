@@ -27,7 +27,7 @@ A real-time computer vision system designed and trained for automated surfer det
 
 Surf Reporter's backend is a robust Flask application that combines computer vision, real-time video processing, and live buoy oceanographic data analysis to provide comprehensive and up-to-date surf monitoring capabilities. This system processes HLS (HTTP Live Streaming) video streams from varying surf cameras worldwide, detects surfers using a custom-trained machine learning model, and aggregates wave data from CDIP (Coastal Data Information Program) buoys.
 
-## Key Features
+## Features
 
 - **Real-time Surfer Detection**: Machine learning powered computer vision using Roboflow inference pipelines
 - **Multi-stream Processing**: Concurrent analysis of multiple live surf camera feeds using threading
@@ -85,7 +85,7 @@ Surf Reporter's backend is a robust Flask application that combines computer vis
 
 ## Technology Stack
 
-### Core Technologies
+### Core
 - **Python**: Primary programming language
 - **Flask**: Lightweight web framework optimized for API services
 - **FFmpeg**: Professional-grade video stream processing and conversion
