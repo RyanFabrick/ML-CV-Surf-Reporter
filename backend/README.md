@@ -4,9 +4,11 @@ A real-time computer vision system designed and trained for automated surfer det
 
 ## Table of Contents
 - [Overview](#overview)
-- [Key Features](#key-features)
+- [Features](#features)
+- [Main Page Real-Time Surfer Detection](#real-time-surfer-detection-on-main-page)
 - [System Architecture](#system-architecture)
 - [Technology Stack](#technology-stack)
+- [Computer Vision & Machine Learning Model in Action](custom-trained-computer-vision-&-machine-learning-model-in-action)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
 - [API Documentation](#api-documentation)
@@ -35,6 +37,10 @@ Surf Reporter's backend is a robust Flask application that combines computer vis
 - **Oceanographic Data Integration**: Real-time wave data from CDIP buoy networks
 - **Robust Error Handling**: Automatic recovery and health monitoring systems
 - **RESTful API Design**: Clean, documented endpoints for frontend integration
+
+## Real-Time Surfer Detection on Main Page
+  ![backend gif](https://github.com/user-attachments/assets/f0e1f27c-a2ae-4054-8106-721ad505d40a)
+
 
 ## System Architecture
 
@@ -109,6 +115,10 @@ Surf Reporter's backend is a robust Flask application that combines computer vis
 - **Roboflow API**: Hosted machine learning model inference services
 - **HLS Streaming**: Live video feed integration from surf cameras
 - **The Surfers View**: Primary live surf camera feed provider
+
+## Custom-Trained Computer Vision & Machine Learning Model in Action
+
+![example_video_gif](https://github.com/user-attachments/assets/a794ac81-79de-446d-9246-89ff1fcffc51)
 
 ## Project Structure
 
