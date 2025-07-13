@@ -4,7 +4,7 @@ A comprehensive real-time surf monitoring application that combines computer vis
 
 ## Documentation
 
-For more comprehensive, specific, and thorough documentation:
+For more **comprehensive**, **specific**, and **thorough** documentation on Frontend and Backend:
 - [Frontend README](frontend/README.md)
 - [Backend README](backend/README.md)
 
@@ -164,7 +164,7 @@ My custom-trained computer vision model on Roboflow achieves the following metri
 - **Training Dataset**: 200+ annotated surf images
 - **Real-time Processing**: Configurable FPS (frames per second) on live streams
 
-## 📖 API Documentation
+## API Documentation
 
 ### Video Analysis
 ```http
