@@ -1,4 +1,4 @@
-# Surf Reporter Frontend
+# *Surf Reporter* Frontend
 
 A modern, sleek, responsive React application that provides users with real-time surf and wave conditions as well as real-time surfer detection through live surf cameras.
 ## Table of Contents
@@ -22,7 +22,7 @@ A modern, sleek, responsive React application that provides users with real-time
 
 ## Overview
 
-Surf Reporter's frontend is a cleanly designed web application that combines real-time oceanographic buoy data with computer vision technology to deliver comprehensive and live surf conditions for users. Built with React and featuring a smooth, customizable interface, it provides users with both quantitative wave data and live visual analysis of the number of surfers on live surf cameras.
+*Surf Reporter*'s frontend is a cleanly designed web application that combines real-time oceanographic buoy data with computer vision technology to deliver comprehensive and live surf conditions for users. Built with React and featuring a smooth, customizable interface, it provides users with both quantitative wave data and live visual analysis of the number of surfers on live surf cameras.
 
 ## Features
 
@@ -140,6 +140,8 @@ frontend/
 
 ### Prerequisites
 - Node.js (v16 or higher)
+- HTML
+- CSS
 - npm package manager
 - Backend API server running on localhost:5000
 
@@ -335,7 +337,10 @@ This project was developed as a personal learning project. For future questions 
 
 1. Open an issue describing the enhancement or bug
 2. Fork the repository and create a feature branch
-3. Submit a pull request with detailed description of changes
+3. Follow coding standards
+4. Write tests for new functionality
+5. Update documentation as needed
+6. Submit a pull request with detailed description of changes
 
 ## License
 

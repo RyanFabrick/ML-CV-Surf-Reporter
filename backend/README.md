@@ -1,4 +1,4 @@
-# Surf Reporter Backend
+# *Surf Reporter* Backend
 
 A real-time computer vision system designed and trained for automated surfer detection. Surf and wave condition monitoring using live buoy oceanographic data.
 
@@ -27,7 +27,7 @@ A real-time computer vision system designed and trained for automated surfer det
 
 ## Overview
 
-Surf Reporter's backend is a robust Flask application that combines computer vision, real-time video processing, and live buoy oceanographic data analysis to provide comprehensive and up-to-date surf monitoring capabilities. This system processes HLS (HTTP Live Streaming) video streams from varying surf cameras worldwide, detects surfers using a custom-trained machine learning model, and aggregates wave data from CDIP (Coastal Data Information Program) buoys.
+*Surf Reporter*'s backend is a robust Flask application that combines computer vision, real-time video processing, and live buoy oceanographic data analysis to provide comprehensive and up-to-date surf monitoring capabilities. This system processes HLS (HTTP Live Streaming) video streams from varying surf cameras worldwide, detects surfers using a custom-trained machine learning model, and aggregates wave data from CDIP (Coastal Data Information Program) buoys.
 
 ## Features
 
@@ -49,7 +49,7 @@ Surf Reporter's backend is a robust Flask application that combines computer vis
 │                        Flask Backend                            │
 ├─────────────────────────────────────────────────────────────────┤
 │ Routes:                                                         │
-│ • /api/video-analysis • /api/surfdata • /                      │
+│ • /api/video-analysis • /api/surfdata • /                       │
 └─────────────────────────────────────────────────────────────────┘
                                     │
             ┌───────────────────────┼───────────────────────┐
@@ -64,10 +64,10 @@ Surf Reporter's backend is a robust Flask application that combines computer vis
          │                          │
          ▼                          ▼
 ┌─────────────────┐       ┌─────────────────┐
-│LiveStreamAnalyzer│       │ CDIP THREDDS    │
+│LiveStreamAnalyzer│      │ CDIP THREDDS    │
 │                 │       │                 │
 │ ┌─────────────┐ │       │ • NetCDF Files  │
-│ │FFmpeg Process│ │       │ • Wave Heights  │
+│ │FFmpeg Process│|       │ • Wave Heights  │
 │ │HLS → MJPEG  │ │       │ • Periods       │
 │ └─────────────┘ │       │ • Directions    │
 │                 │       └─────────────────┘
