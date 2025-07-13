@@ -3,7 +3,7 @@
 A comprehensive real-time surf monitoring application that combines computer vision, machine learning, and oceanographic data to provide live surf conditions and automated surfer detection.
 
 ## Table of Contents
-- [Documentation](#documentation)
+- [Frontend & Backend READMEs (way more detail)](#frontend--backend-readmes-way-more-detail)
 - [Overview](#overview)
 - [Features](#features)
 - [System Architecture](#system-architecture)
@@ -18,7 +18,7 @@ A comprehensive real-time surf monitoring application that combines computer vis
 - [Author](#author)
 - [Acknowledgments](#acknowledgments)
 
-## Documentation
+## Frontend & Backend READMEs (way more detail)
 
 For more **comprehensive**, **specific**, and **thorough** documentation on Frontend and Backend:
 - [Frontend README](frontend/README.md)
@@ -128,7 +128,8 @@ For more **comprehensive**, **specific**, and **thorough** documentation on Fron
 - Python 3.8 or higher
 - Node.js 16 or higher
 - FFmpeg installed and accessible in PATH
-- Roboflow API key
+- Roboflow API key and workspace access
+- Sufficient hardware for concurrent stream processing
 
 ### Installation
 
