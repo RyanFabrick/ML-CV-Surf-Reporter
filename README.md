@@ -5,10 +5,14 @@ A comprehensive real-time surf monitoring application that combines computer vis
 ## Table of Contents
 - [Frontend & Backend READMEs (way more detail)](#frontend--backend-readmes-way-more-detail)
 - [Overview](#overview)
+- [Why Did I Build This?](#why-did-i-build-this)
 - [Features](#features)
 - [System Architecture](#system-architecture)
+- [Demo GIFs](#demo-gifs)
+- [Computer Vision & Machine Learning Model in Action](#custom-trained-computer-vision--machine-learning-model-in-action)
 - [Technology Stack](#technology-stack)
 - [Quick Start](#quick-start)
+- [Configuration](#configuration)
 - [Computer Vision & Machine Learning Model Performance](#computer-vision--machine-learning-model-performance)
 - [API Documentation](#api-documentation)
 - [Testing](#testing)
@@ -27,6 +31,14 @@ For more **comprehensive**, **specific**, and **thorough** documentation on Fron
 ## Overview
 
 *Surf Reporter* is a full-stack web application designed to enhance surf monitoring through real-time buoy data metrics combined with computer vision and machine learning. The system processes HLS (Live HTTP Streaming) video from surf cameras worldwide, detects surfers using a custom-trained machine learning model, and integrates real-time wave data from CDIP (Coastal Data Information Program) buoys to provide comprehensive surf and wave conditions for users.
+
+## Why Did I Build This?
+
+I built this personal project to grow my skills and knowledge in computer science and data science through something that feels close to home. As a UCSB student living in Isla Vista, California, surfing isn’t just a hobby; it’s woven into the community and daily life around me.
+
+I’ve always noticed how popular companies like *Surfline* use live surf cameras and data to help surfers, but most of their features are hidden behind steep paywalls. I wanted to do something different: build my own application that taps into live surf cameras, leverages computer vision and machine learning, and keeps everything completely free and open for anyone to use.
+
+This project became a way to blend what I’m passionate about, technology and surfing, into something real, useful, and shareable.
 
 ### Key Capabilities
 - Real-time surfer detection using custom computer vision models via Roboflow
@@ -92,6 +104,10 @@ For more **comprehensive**, **specific**, and **thorough** documentation on Fron
 │ └─────────────┘ └─────────────┘ └─────────────┘                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+## Demo GIFs
+
+## Computer Vision & Machine Learning Model in Action
 
 ## Technology Stack
 
@@ -171,6 +187,160 @@ For more **comprehensive**, **specific**, and **thorough** documentation on Fron
 5. **Access the Application**
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:5000
+
+## Configuration
+
+### Environment Variables
+
+The application requires several environment variables to be configured for proper operation. These variables handle external service integration, API authentication, and system behavior.
+
+### Backend Configuration
+
+Create a `.env` file in the `backend/` directory with the following variables:
+
+```env
+# Roboflow API Configuration
+ROBOFLOW_API_KEY=your_roboflow_api_key_here
+ROBOFLOW_WORKSPACE=your_workspace_name
+ROBOFLOW_WORKFLOW_ID=your_workflow_id
+
+# Flask Application Settings
+FLASK_ENV=development
+FLASK_DEBUG=True
+API_PORT=5000
+
+# Stream Processing Configuration
+FFMPEG_TIMEOUT=30
+MAX_CONCURRENT_STREAMS=5
+FRAME_RATE=1
+```
+
+### Required Variables
+
+**ROBOFLOW_API_KEY**
+- **Purpose**: Authentication key for accessing Roboflow's machine learning inference services
+- **Why needed**: Enables real-time surfer detection through the custom-trained computer vision model
+- **How to obtain**: Sign up at Roboflow, create a workspace, and generate an API key from your account settings
+
+**ROBOFLOW_WORKSPACE**
+- **Purpose**: Identifies your specific Roboflow workspace containing the trained model
+- **Why needed**: Directs API calls to the correct model deployment environment
+- **Format**: Usually your username or organization name
+
+**ROBOFLOW_WORKFLOW_ID**
+- **Purpose**: Specifies the exact workflow/model version to use for inference
+- **Why needed**: Ensures consistent model performance and version control
+- **How to obtain**: Found in your Roboflow project dashboard under workflow settings
+
+### Optional Configuration Variables
+
+**FLASK_ENV**
+- **Purpose**: Sets the Flask application environment mode
+- **Default**: `development`
+- **Options**: `development`, `production`, `testing`
+
+**FLASK_DEBUG**
+- **Purpose**: Enables/disables Flask debug mode for development
+- **Default**: `True` for development
+- **Production**: Set to `False` for production deployments
+
+**API_PORT**
+- **Purpose**: Specifies the port for the Flask backend server
+- **Default**: `5000`
+- **Note**: Ensure this port is available and not blocked by firewall
+
+**FFMPEG_TIMEOUT**
+- **Purpose**: Maximum time (seconds) to wait for FFmpeg stream processing
+- **Default**: `30`
+- **Why needed**: Prevents hanging processes when streams are unavailable
+
+**MAX_CONCURRENT_STREAMS**
+- **Purpose**: Limits the number of simultaneous video streams processed
+- **Default**: `5`
+- **Why needed**: Prevents resource exhaustion and maintains system stability
+
+**FRAME_RATE**
+- **Purpose**: Frames per second for video analysis processing
+- **Default**: `1` (one frame per second)
+- **Why needed**: Balances detection accuracy with computational efficiency
+
+## Data Source Configuration
+
+### CDIP Buoy Integration
+
+The application automatically connects to CDIP (Coastal Data Information Program) THREDDS data server via OpenDAP protocol. No additional configuration is required for buoy data access.
+
+**Supported Buoy Networks:**
+- Real-time oceanographic data from 100+ CDIP buoys
+- Automatic data quality validation and filtering
+- Historical data access for trend analysis
+
+### Surf Camera Stream URLs
+
+Stream URLs are preconfigured in `backend/webcam_configs.py`. The application supports HLS (HTTP Live Streaming) sources from:
+
+**Default Sources:**
+- The Surfers View camera network
+
+**Adding Custom Streams:**
+```python
+# In webcam_configs.py
+WEBCAM_CONFIGS = {
+    'custom_location': {
+        'name': 'Custom Surf Spot',
+        'url': 'https://your-hls-stream-url.com/playlist.m3u8',
+        'location': 'Custom Location, State'
+    }
+}
+```
+
+## System Requirements
+
+**Hardware Requirements:**
+- **CPU**: Suffienceint enought for multiple, concurrent stream processing
+- **RAM**: Suffienceint enought for multiple, concurrent stream processing
+- **Storage**: Reccomended 2GB free space for dependencies and temporary files
+- **Network**: Stable broadband connection
+
+**Software Dependencies:**
+- **FFmpeg**: Required for video stream processing and format conversion
+- **Python**: Version 3.8 or higher
+- **Node.js**: Version 16 or higher for frontend development
+
+## Verification
+
+After configuration, verify your setup:
+
+```bash
+# Test backend configuration
+cd backend
+python -c "from config import Config; print('✓ Backend configuration loaded')"
+
+# Test Roboflow API connection
+python -c "from roboflow import Roboflow; rf = Roboflow(api_key='your_key'); print('✓ Roboflow connected')"
+
+# Test FFmpeg installation
+ffmpeg -version
+
+# Start application
+python app.py
+```
+
+## Security Considerations
+
+- **Never commit `.env` files** to version control
+- **Use environment-specific configurations** for development/production
+- **Rotate API keys regularly** for security
+- **Restrict API key permissions** to minimum required scope
+- **Use HTTPS in production** for secure data transmission
+
+## Troubleshooting Configuration
+
+**Common Issues:**
+- **Missing API Key**: Ensure ROBOFLOW_API_KEY is set and valid
+- **Stream Connection Failures**: Verify internet connectivity and stream URLs
+- **FFmpeg Errors**: Confirm FFmpeg is installed and accessible in PATH
+- **Port Conflicts**: Ensure configured ports (5000, 3000) are available
 
 ## Computer Vision & Machine Learning Model Performance
 
