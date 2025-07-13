@@ -22,7 +22,7 @@ A comprehensive real-time surf monitoring application that combines computer vis
 - [Author](#author)
 - [Acknowledgments](#acknowledgments)
 
-## Frontend & Backend READMEs (way more detail)
+## Frontend & Backend READMEs (Way More Detail & Demo GIFs)
 
 For more **comprehensive**, **specific**, and **thorough** documentation on Frontend and Backend:
 - [Frontend README](frontend/README.md)
@@ -107,9 +107,13 @@ This project became a way to blend what I’m passionate about, technology and s
 
 ## Demo GIFs
 
+**Dashboard**
+
 ![demo gif 1 dark](https://github.com/user-attachments/assets/8f4d11f3-323a-4dbc-b821-fbe4ddff2b8a)
 
 ![demo 3 gif light](https://github.com/user-attachments/assets/6b5b7878-568f-4d85-b0f5-0a5056d509cc)
+
+**Settings Page & About Page**
 
 ![demo gif 2 dark](https://github.com/user-attachments/assets/70de193e-cd4c-4537-856e-96ea1d1e8d67)
 
