@@ -2,6 +2,22 @@
 
 A comprehensive real-time surf monitoring application that combines computer vision, machine learning, and oceanographic data to provide live surf conditions and automated surfer detection.
 
+## Table of Contents
+- [Documentation](#documentation)
+- [Overview](#overview)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Technology Stack](#technology-stack)
+- [Quick Start](#quick-start)
+- [Computer Vision & Machine Learning Model Performance](#computer-vision--machine-learning-model-performance)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
+- [Author](#author)
+- [Acknowledgments](#acknowledgments)
+
 ## Documentation
 
 For more **comprehensive**, **specific**, and **thorough** documentation on Frontend and Backend:
@@ -239,8 +255,8 @@ This project is open source and available under the MIT License.
 
 **Ryan Fabrick**
 - Statistics and Data Science (B.S) Student, University of California Santa Barbara
-- GitHub: https://github.com/RyanFabrick
-- LinkedIn: www.linkedin.com/in/ryan-fabrick
+- GitHub: [https://github.com/RyanFabrick](https://github.com/RyanFabrick)
+- LinkedIn: [www.linkedin.com/in/ryan-fabrick](https://www.linkedin.com/in/ryan-fabrick)
 - Email: ryanfabrick@gmail.com
 
 ## Acknowledgments

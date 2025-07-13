@@ -561,8 +561,8 @@ This project is open source and available under the MIT License.
 
 **Ryan Fabrick**
 - Statistics and Data Science (B.S) Student, University of California Santa Barbara
-- GitHub: https://github.com/RyanFabrick
-- LinkedIn: www.linkedin.com/in/ryan-fabrick
+- GitHub: [https://github.com/RyanFabrick](https://github.com/RyanFabrick)
+- LinkedIn: [www.linkedin.com/in/ryan-fabrick](https://www.linkedin.com/in/ryan-fabrick)
 - Email: ryanfabrick@gmail.com
 
 ## Acknowledgments
