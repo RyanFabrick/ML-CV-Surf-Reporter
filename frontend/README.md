@@ -18,7 +18,7 @@ A modern, sleek, responsive React application that provides users with real-time
 - [Contributing](#contributing)
 - [License](#license)
 - [Author](#author)
-- [Acknowledgments](#acknowledgments)
+- [Acknowledgments & References](#acknowledgments--references)
 
 ## Overview
 
@@ -354,13 +354,13 @@ This project is open source and available under the MIT License.
 - LinkedIn: [www.linkedin.com/in/ryan-fabrick](https://www.linkedin.com/in/ryan-fabrick)
 - Email: ryanfabrick@gmail.com
 
-## Acknowledgments
+## Acknowledgments & References
 
-- **CDIP** (Coastal Data Information Program) - Buoy data source
-- **The Surfers View** - Live surf camera feeds
-- **Roboflow** - Computer vision and machine learning model training platform
-- **FFmpeg** - Video stream processing and frame extraction
-- **React Community** - Super helpful and clear documentation
+- **[CDIP (Coastal Data Information Program)](https://cdip.ucsd.edu/)** - Buoy oceanographic data source
+- **[The Surfers View](https://www.thesurfersview.com/)** - Live surf camera feed provider
+- **[Roboflow](https://roboflow.com/)** - Computer vision and machine learning model training infrastructure
+- **[FFmpeg](https://ffmpeg.org/)** - Professional video stream processing and frame extraction capabilities
+- **[React Community](https://react.dev/)** - Super helpful and clear documentation
 
 ________________________________________
 Built with ❤️ for the surfing community

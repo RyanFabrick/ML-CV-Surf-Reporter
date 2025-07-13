@@ -23,7 +23,7 @@ A real-time computer vision system designed and trained for automated surfer det
 - [Contributing](#contributing)
 - [License](#license)
 - [Author](#author)
-- [Acknowledgments](#acknowledgments)
+- [Acknowledgments & References](#acknowledgments--references)
 
 ## Overview
 
@@ -565,13 +565,13 @@ This project is open source and available under the MIT License.
 - LinkedIn: [www.linkedin.com/in/ryan-fabrick](https://www.linkedin.com/in/ryan-fabrick)
 - Email: ryanfabrick@gmail.com
 
-## Acknowledgments
+## Acknowledgments & References
 
-- **CDIP (Coastal Data Information Program)** - Buoy oceanographic data source
-- **The Surfers View** - Live surf camera feed provider
-- **Roboflow** - Computer vision and machine learning model training infrastructure
-- **FFmpeg** - Professional video stream processing and frame extraction capabilities
-- **Flask Community** - Excellent web framework
+- **[CDIP (Coastal Data Information Program)](https://cdip.ucsd.edu/)** - Buoy oceanographic data source
+- **[The Surfers View](https://www.thesurfersview.com/)** - Live surf camera feed provider
+- **[Roboflow](https://roboflow.com/)** - Computer vision and machine learning model training infrastructure
+- **[FFmpeg](https://ffmpeg.org/)** - Professional video stream processing and frame extraction capabilities
+- **[Flask Community](https://flask.palletsprojects.com/)** - Excellent web framework
 
 ________________________________________
 Built with ❤️ for the surfing community
