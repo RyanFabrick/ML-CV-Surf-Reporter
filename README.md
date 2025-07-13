@@ -3,7 +3,7 @@
 A comprehensive real-time surf monitoring application that combines computer vision, machine learning, and oceanographic data to provide live surf conditions and automated surfer detection.
 
 ## Table of Contents
-- [Frontend & Backend READMEs (way more detail)](#frontend--backend-readmes-way-more-detail)
+- [Frontend, Backend, & Scripts READMEs (way more detail)](#frontend-backend--scripts-readmes-way-more-detail--demo-gifs)
 - [Overview](#overview)
 - [Why Did I Build This?](#why-did-i-build-this)
 - [Features](#features)
@@ -23,11 +23,12 @@ A comprehensive real-time surf monitoring application that combines computer vis
 - [Author](#author)
 - [Acknowledgments & References](#acknowledgments--references)
 
-## Frontend & Backend READMEs (Way More Detail & Demo GIFs)
+## Frontend, Backend & Scripts READMEs (Way More Detail & Demo GIFs)
 
-For more **comprehensive**, **specific**, and **thorough** documentation on Frontend and Backend:
+For more **comprehensive**, **specific**, and **thorough** documentation on Frontend, Backend, and Scripts:
 - [Frontend README](frontend/README.md)
 - [Backend README](backend/README.md)
+- [Scripts README](scripts/README.md)
 
 ## Overview
 
