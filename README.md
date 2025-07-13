@@ -31,7 +31,7 @@ For more **comprehensive**, **specific**, and **thorough** documentation on Fron
 
 ## Overview
 
-*Surf Reporter* is a full-stack web application designed to enhance surf monitoring through real-time buoy data metrics combined with computer vision and machine learning. The system processes HLS (Live HTTP Streaming) video from surf cameras worldwide, detects surfers using a custom-trained machine learning model, and integrates real-time wave data from CDIP (Coastal Data Information Program) buoys to provide comprehensive surf and wave conditions for users.
+*Surf Reporter* is a full-stack web application designed to enhance surf monitoring through real-time buoy data metrics combined with computer vision and machine learning. The system processes HLS (HTTP Live Streaming) video from surf cameras worldwide, detects surfers using a custom-trained machine learning model, and integrates real-time wave data from CDIP (Coastal Data Information Program) buoys to provide comprehensive surf and wave conditions for users.
 
 ## Why Did I Build This?
 
