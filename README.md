@@ -11,6 +11,7 @@ A comprehensive real-time surf monitoring application that combines computer vis
 - [Demo GIFs](#demo-gifs)
 - [Custom Trained Computer Vision & Machine Learning Model in Action](#custom-trained-computer-vision--machine-learning-model-in-action)
 - [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
 - [Computer Vision & Machine Learning Model Performance](#computer-vision--machine-learning-model-performance)
@@ -151,6 +152,74 @@ This project became a way to blend what I’m passionate about, technology and s
 - **pandas**: Data manipulation and time series analysis
 - **NumPy**: Numerical computing and array operations
 - **OPeNDAP**: Direct integration for CDIP THREDDS data server
+
+## Project Structure
+
+```
+backend/
+├── analysis/
+│   ├── live_stream_analyzer.py
+│   └── roboflow_utils.py
+├── routes/
+│   ├── frontend.py
+│   ├── surf_data.py
+│   └── video_analysis.py
+├── .env
+├── .gitignore
+├── app.py
+├── backend_tests.py
+├── config.py
+├── requirements.txt
+└── webcam_configs.py
+
+frontend/
+├── node_modules/
+├── public/
+│   ├── videos/
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── logo192.png
+│   ├── logo512.png
+│   ├── manifest.json
+│   └── robots.txt
+├── src/
+│   ├── components/
+│   │   ├── About_Page.js
+│   │   ├── Chart_Panel.js
+│   │   ├── Dashboard_Page.js
+│   │   ├── Historical_Data_Panel.js
+│   │   ├── Settings_Page.js
+│   │   ├── Video_Panel.js
+│   │   └── Wave_Data_Panel.js
+│   ├── constants/
+│   │   ├── Buoy_Options.js
+│   │   └── Webcam_Options.js
+│   ├── hooks/
+│   │   ├── useVideoData.js
+│   │   └── useWaveData.js
+│   ├── utils/
+│   │   ├── getCurrentWaveData.js
+│   │   └── prepareChartData.js
+│   ├── App.css
+│   ├── App.js
+│   ├── App.test.js
+│   ├── index.css
+│   └── index.js
+├── logo.svg
+├── reportWebVitals.js
+├── setupTests.js
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── postcss.config.js
+└── README.md
+
+scripts/
+├── CV_pipeline_TEST.py
+├── CV_pipeline_TEST2.py
+├── frame_extraction.py
+└── README.md
+```
 
 ## Quick Start
 
@@ -311,9 +380,9 @@ WEBCAM_CONFIGS = {
 ## System Requirements
 
 **Hardware Requirements:**
-- **CPU**: Suffienceint enought for multiple, concurrent stream processing
-- **RAM**: Suffienceint enought for multiple, concurrent stream processing
-- **Storage**: Reccomended 2GB free space for dependencies and temporary files
+- **CPU**: Sufficient enough for multiple, concurrent stream processing
+- **RAM**: Sufficient enough for multiple, concurrent stream processing
+- **Storage**: Recommended 2GB free space for dependencies and temporary files
 - **Network**: Stable broadband connection
 
 **Software Dependencies:**
