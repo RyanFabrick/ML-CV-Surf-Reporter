@@ -107,7 +107,15 @@ This project became a way to blend what I’m passionate about, technology and s
 
 ## Demo GIFs
 
+![demo gif 1 dark](https://github.com/user-attachments/assets/8f4d11f3-323a-4dbc-b821-fbe4ddff2b8a)
+![demo 3 gif light](https://github.com/user-attachments/assets/6b5b7878-568f-4d85-b0f5-0a5056d509cc)
+
+![demo gif 2 dark](https://github.com/user-attachments/assets/70de193e-cd4c-4537-856e-96ea1d1e8d67)
+![demo gif 4 light](https://github.com/user-attachments/assets/4f0519ff-970b-4ffc-ae5e-abe52d48677c)
+
 ## Computer Vision & Machine Learning Model in Action
+
+![example_video_gif](https://github.com/user-attachments/assets/a55c25ad-a6e1-444e-adf3-b057ca1109dc)
 
 ## Technology Stack
 
